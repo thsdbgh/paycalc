@@ -96,6 +96,11 @@ async function api(req, env, url) {
   const ip = req.headers.get("cf-connecting-ip") || "0";
 
   if (p === "/api/health") return json({ ok: true, time: new Date().toISOString() });
+  if (p === "/api/selftest") {
+    const t0 = Date.now(); await pbkdf2("selftest-password", "salt-salt-salt", PBKDF2_ITER); const t1 = Date.now();
+    const c = await env.DB.prepare("SELECT COUNT(*) AS n FROM users").first();
+    return json({ pbkdf2Ms: t1 - t0, iter: PBKDF2_ITER, db: c.n >= 0 });
+  }
 
   // ---- 공개: 직원용 명세서 보기 ----
   let mm = p.match(/^\/api\/share\/([A-Za-z0-9_-]{20,64})$/);
