@@ -11,7 +11,7 @@ ROOT = Path(__file__).parent
 SRC, DIST = ROOT / "src", ROOT / "dist"
 SITE_NAME = "급여계산소"
 # 검색엔진 소유 확인 (지우지 마세요)
-VERIFY_META = '<meta name="naver-site-verification" content="713dec460b0c42601ce5efc3b8c1279d006d818d">'
+VERIFY_META = '<meta name="naver-site-verification" content="618cfa4320abb8aee0706ca631d82705c9bdf8fe">'
 UPDATED = "2026-10-17"
 
 ap = argparse.ArgumentParser()
