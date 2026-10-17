@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>임금명세서 | 급여계산소</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/app/app.css">
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="/"><i>₩</i>급여계산소</a></div></header>
+<main class="wrap"><div id="v" style="margin-top:20px"><p class="lead">명세서를 불러오는 중…</p></div></main>
+<footer><div class="wrap"><p>이 명세서는 사업주가 급여계산소에서 작성해 보낸 것입니다. 금액에 대한 문의는 사업주에게 해 주세요.</p>
+<p><a href="/app/">사장님이라면: 급여·명세서 자동 관리 무료로 시작하기</a></p></div></footer>
+<script src="/ganyi.js"></script><script src="/calc.js"></script><script src="/app/slip.js"></script>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search),t=q.get("t")||"",ym=q.get("ym")||"",v=document.getElementById("v");
+  if(!/^[A-Za-z0-9_-]{20,64}$/.test(t)||!/^\d{4}-\d{2}$/.test(ym)){v.innerHTML='<p class="note warn">링크가 올바르지 않습니다. 사업주에게 다시 받아 주세요.</p>';return;}
+  fetch("/api/share/"+encodeURIComponent(t)+"?ym="+ym).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||"오류");return j;});})
+  .then(function(j){
+    var r=Calc.monthlyPayroll(slipEmp(j.employee,j.extras),j.shifts,ym,!!j.business.size5);
+    v.innerHTML=renderSlip(j.employee,j.business,ym,r)+'<div class="row-actions no-print"><button class="btn primary" type="button" onclick="window.print()">인쇄 · PDF 저장</button></div>';
+  }).catch(function(e){v.innerHTML='<p class="note warn">'+String(e.message).replace(/</g,"&lt;")+'</p>';});
+})();
+</script></body></html>

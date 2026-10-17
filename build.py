@@ -70,6 +70,19 @@ def ad_slot(name):
                 f'<script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script></div>')
     return '<div class="ad" aria-label="광고 자리"></div>' if args.preview else ""
 
+def app_promo():
+    return ('<div class="promo"><p><b>직원 근무시간만 적으면</b> 주휴수당·월급·임금명세서가 자동으로. 명세서는 직원에게 링크로 보내세요. 직원 2명까지 무료.</p>'
+            '<a href="app/#signup">무료로 시작</a></div>')
+
+# 성과형 제휴 링크 자리: 제휴 승인 후 {"페이지slug": [("문구", "URL"), ...]} 형태로 채우면 표시된다 (비어 있으면 아무것도 표시 안 함)
+AFFILIATES = {}
+def aff_box(slug):
+    items = AFFILIATES.get(slug) or []
+    if not items:
+        return ""
+    links = "".join(f'<a class="btn" href="{html.escape(u)}" target="_blank" rel="sponsored noopener">{html.escape(t)}</a>' for t, u in items)
+    return f'<div class="card" style="margin:20px 0"><p class="src" style="margin:0 0 8px">광고 · 제휴 링크</p><div class="actions" style="flex-wrap:wrap">{links}</div></div>'
+
 def promo():
     if not args.kmong:
         return ""
@@ -105,7 +118,7 @@ def foot(extra_js=""):
     links = " ".join(f'<a href="{p["slug"]}.html">{p["short"]}</a>' for p in PAGES)
     return f"""</main><footer><div class="wrap">
 <p>{links}</p>
-<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="{CONTACT_HREF}" rel="noopener">문의</a></p>
+<p><a href="app/">사장님 급여관리 (무료)</a><a href="about.html">사이트 소개</a><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="{CONTACT_HREF}" rel="noopener">문의</a></p>
 <p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
 정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
 <p>© {datetime.date.today().year} {SITE_NAME} · 기준 갱신일 {UPDATED}</p></div></footer>
@@ -132,7 +145,7 @@ def build_page(p):
 <div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
 {ad_slot('top')}
 <article>{p['article']}</article>
-{promo() if p.get('promo') else ''}
+{app_promo() if p['slug'] in ('payslip','labor-cost','juhyu','alba','overtime','minwage') else ''}{aff_box(p['slug'])}{promo() if p.get('promo') else ''}
 <h2>자주 묻는 질문</h2>{faq}
 {ad_slot('bottom')}
 <h2>함께 쓰면 좋은 계산기</h2><div class="grid">{related}</div>
@@ -151,7 +164,7 @@ def build_index():
     body = f"""<h1 style="margin-top:24px">월급·알바비·퇴직금, 바로 계산하세요</h1>
 <p class="lead">2026년·2027년 최저임금과 4대보험 요율을 반영한 무료 급여 계산기 모음입니다. 회원가입 없이, 입력하는 즉시 결과가 나옵니다.</p>
 <h2>근로자·알바</h2><div class="grid">{tiles}</div>
-<h2>사장님</h2><div class="grid">{boss}</div>
+<h2>사장님</h2>{app_promo()}<div class="grid">{boss}</div>
 <h2>가이드</h2><div class="grid">{"".join(f'<a class="tile" href="{g["slug"]}.html"><b>{html.escape(g["title"])}</b></a>' for g in GUIDES)}</div>
 {ad_slot('home')}
 {promo()}
@@ -180,14 +193,28 @@ ABOUT = f"""<p>{SITE_NAME}는 아르바이트생, 직장인, 소상공인 사장
 <p>계산은 모두 이용자의 브라우저 안에서만 이루어지며, 입력한 금액이나 날짜는 어디에도 전송·저장되지 않습니다.</p>
 <p>오류 제보나 계산기 추가 요청은 <a href="{CONTACT_HREF}" rel="noopener">{CONTACT_TEXT}</a>로 보내 주세요.</p>"""
 
-PRIVACY = f"""<p>{SITE_NAME}(이하 '사이트')는 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」을 지킵니다.</p>
-<h2>1. 수집하는 개인정보</h2><p>사이트는 회원가입이 없으며 이름·연락처 등 개인정보를 직접 수집하지 않습니다. 계산기에 입력한 값은 이용자의 브라우저에서만 처리되고 서버로 전송되지 않습니다.</p>
-<h2>2. 쿠키와 광고</h2><p>사이트는 Google AdSense 광고를 게재할 수 있습니다. Google을 비롯한 제3자 광고 사업자는 쿠키를 사용해 이용자의 이전 방문 기록을 바탕으로 광고를 게재할 수 있습니다.
-Google의 광고 쿠키 사용에 대해서는 <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Google 광고 정책</a>에서 확인할 수 있으며,
-<a href="https://adssettings.google.com" target="_blank" rel="noopener">광고 설정</a>에서 맞춤 광고를 끌 수 있습니다. 브라우저 설정에서 쿠키 저장을 거부할 수도 있습니다.</p>
-<h2>3. 방문 통계</h2><p>서비스 개선을 위해 페이지 방문 수 등 개인을 식별할 수 없는 통계 정보를 이용할 수 있습니다.</p>
-<h2>4. 문의</h2><p>개인정보 관련 문의: <a href="{CONTACT_HREF}" rel="noopener">{CONTACT_TEXT}</a></p>
-<h2>5. 시행일</h2><p>이 방침은 {UPDATED}부터 적용됩니다.</p>"""
+PRIVACY = f"""<p>{SITE_NAME}(이하 '서비스')는 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고, 이와 관련한 고충을 신속하게 처리하기 위해 다음과 같이 개인정보처리방침을 정합니다.</p>
+<h2>1. 처리하는 개인정보 항목과 목적</h2>
+<table class="t"><tr><th>구분</th><th>항목</th><th>목적</th></tr>
+<tr><td>계산기 이용</td><td>수집하지 않음 (입력값은 브라우저 안에서만 계산)</td><td>-</td></tr>
+<tr><td>사장님 급여관리 회원</td><td>이메일, 비밀번호(복원할 수 없는 암호화 값), 사업장명, 대표자명</td><td>회원 식별, 로그인, 명세서 작성</td></tr>
+<tr><td>회원이 입력한 직원 정보</td><td>직원 이름, 생년월일, 시급, 근로시간, 근무기록, 공제 방식</td><td>급여 계산과 임금명세서 작성·교부</td></tr>
+<tr><td>자동 수집</td><td>로그인 유지를 위한 세션 쿠키, 보안을 위한 접속 IP(로그인 시도 제한 목적, 24시간 후 삭제)</td><td>부정 이용 방지</td></tr></table>
+<p>회원이 입력하는 직원 정보는 회원(사업주)이 근로기준법에 따른 임금대장·임금명세서 작성을 위해 처리하는 정보이며, 서비스는 회원의 처리를 돕기 위해 이를 보관합니다. 회원은 직원에게 이 처리 사실을 알려야 합니다.</p>
+<h2>2. 보유 기간과 파기</h2>
+<p>회원 정보와 회원이 입력한 모든 데이터는 회원 탈퇴 시 즉시 삭제합니다. 직원을 삭제하면 그 직원의 명세서 링크는 즉시 무효가 됩니다. 로그인 시도 기록은 24시간 후 자동 삭제합니다.</p>
+<h2>3. 처리 위탁 및 국외 이전</h2>
+<p>서비스는 안정적인 운영을 위해 다음 업체의 클라우드를 이용합니다.</p>
+<ul><li>수탁·이전받는 자: Cloudflare, Inc. (미국) — 웹사이트 호스팅, 데이터베이스(Cloudflare D1, 아시아·태평양 리전) 운영</li>
+<li>이전 항목: 위 1항의 회원·직원 정보 / 이전 시기: 서비스 이용 시 네트워크를 통해 수시로 / 보유 기간: 위 2항과 같음</li></ul>
+<h2>4. 쿠키와 광고</h2>
+<p>로그인 유지를 위해 필수 쿠키(세션)를 사용합니다. 사이트에는 Google AdSense 광고가 게재될 수 있으며, Google 등 제3자 광고 사업자는 쿠키를 사용해 이용자의 방문 기록을 바탕으로 광고를 게재할 수 있습니다. <a href="https://adssettings.google.com" target="_blank" rel="noopener">광고 설정</a>에서 맞춤 광고를 끌 수 있고, 브라우저 설정으로 쿠키를 거부할 수 있습니다.</p>
+<h2>5. 정보주체의 권리</h2>
+<p>회원은 언제든지 앱의 설정 화면에서 자신의 정보를 확인·수정하고 회원 탈퇴로 삭제할 수 있습니다. 직원은 사업주에게 자신의 정보 열람·정정·삭제를 요청할 수 있으며, 서비스로 직접 요청하면 해당 사업주에게 전달합니다.</p>
+<h2>6. 안전성 확보 조치</h2>
+<p>비밀번호 일방향 암호화(PBKDF2), 전 구간 HTTPS 암호화, 계정별 데이터 접근 분리, 로그인 시도 제한을 적용합니다.</p>
+<h2>7. 문의</h2><p>개인정보 관련 문의·고충 처리: <a href="{CONTACT_HREF}" rel="noopener">{CONTACT_TEXT}</a></p>
+<h2>8. 시행일</h2><p>이 방침은 2026-10-17부터 적용됩니다.</p>"""
 
 def man(a):  # 만원 → "4,000만원" / "1억 2,000만원"
     if a >= 10000:
@@ -356,12 +383,25 @@ def wage_table():
 <div style="overflow-x:auto"><table class="t"><tr><th>시급</th><th>주 20시간</th><th>주 30시간</th><th>주 40시간</th></tr>{trs}</table></div>{ad_slot('mid')}"""
     return head("시급별 월급표 2026·2027 — 시급 10,320원~20,000원 주휴수당 포함 월급", "시급별·근무시간별 월급을 주휴수당 포함으로 한눈에 비교하세요. 2026년 최저임금 10,320원, 2027년 10,700원 반영.", f"{BASE}/wage-table") + body + foot() + "</body></html>"
 
+TERMS = f"""<p>이 약관은 {SITE_NAME}(이하 '서비스')가 제공하는 계산기와 사장님 급여관리 기능의 이용 조건을 정합니다.</p>
+<h2>1. 서비스 내용</h2><p>서비스는 급여·세금·4대보험 계산 도구와, 회원이 직원 근무기록을 입력해 급여를 계산하고 임금명세서를 작성·공유하는 기능을 제공합니다.</p>
+<h2>2. 요금</h2><p>계산기는 무료입니다. 급여관리 기능은 직원 2명까지 무료이며, 유료 요금제를 도입하는 경우 시행 30일 전에 서비스 화면으로 알리고, 회원이 동의한 경우에만 요금을 청구합니다.</p>
+<h2>3. 회원의 의무</h2><ul><li>정확한 정보를 입력하고 계정 정보를 안전하게 관리해야 합니다.</li>
+<li>직원 정보를 입력할 때는 관계 법령에 따라 직원에게 처리 사실을 알려야 합니다.</li>
+<li>명세서 링크는 해당 직원에게만 전달해야 하며, 유출된 경우 앱에서 링크를 새로 만들어야 합니다.</li></ul>
+<h2>4. 계산 결과의 성격</h2><p>서비스의 계산 결과는 공개된 법령과 기준을 바탕으로 한 참고 자료이며, 노무·세무 자문을 대신하지 않습니다. 실제 임금 지급과 신고에 대한 최종 책임은 사업주에게 있습니다. 서비스는 고의 또는 중대한 과실이 없는 한 계산 결과의 이용으로 생긴 손해에 대해 책임지지 않습니다.</p>
+<h2>5. 서비스 변경·중단</h2><p>서비스는 운영상 필요한 경우 기능을 변경하거나 중단할 수 있으며, 중요한 변경은 미리 알립니다. 서비스를 종료하는 경우 회원이 데이터를 확인할 수 있도록 30일 이상 미리 알립니다.</p>
+<h2>6. 탈퇴</h2><p>회원은 언제든지 설정 화면에서 탈퇴할 수 있으며, 탈퇴 즉시 모든 데이터가 삭제됩니다.</p>
+<h2>7. 문의</h2><p><a href="{CONTACT_HREF}" rel="noopener">{CONTACT_TEXT}</a></p>
+<p class="src">시행일: 2026-10-17</p>"""
+
 def main():
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir()
     for f in ("style.css", "calc.js", "app.js", "ganyi.js"):
         shutil.copy(SRC / f, DIST / f)
+    shutil.copytree(SRC / "app", DIST / "app")
     (DIST / "index.html").write_text(build_index(), encoding="utf-8")
     for p in PAGES:
         (DIST / f"{p['slug']}.html").write_text(build_page(p), encoding="utf-8")
@@ -383,7 +423,8 @@ def main():
     shutil.copy(SRC / "og.png", DIST / "og.png")
     (DIST / "about.html").write_text(simple_page("about", "사이트 소개", ABOUT), encoding="utf-8")
     (DIST / "privacy.html").write_text(simple_page("privacy", "개인정보처리방침", PRIVACY), encoding="utf-8")
-    urls = [BASE + "/"] + [f"{BASE}/{p['slug']}" for p in PAGES] + [f"{BASE}/salary-table", f"{BASE}/wage-table", f"{BASE}/guides"] + [f"{BASE}/{g['slug']}" for g in GUIDES] + sal_urls + [f"{BASE}/about", f"{BASE}/privacy"]
+    (DIST / "terms.html").write_text(simple_page("terms", "이용약관", TERMS), encoding="utf-8")
+    urls = [BASE + "/"] + [f"{BASE}/{p['slug']}" for p in PAGES] + [f"{BASE}/salary-table", f"{BASE}/wage-table", f"{BASE}/guides"] + [f"{BASE}/{g['slug']}" for g in GUIDES] + sal_urls + [f"{BASE}/about", f"{BASE}/terms", f"{BASE}/privacy", f"{BASE}/app/"]
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         + "".join(f"<url><loc>{u}</loc><lastmod>{UPDATED}</lastmod></url>" for u in urls) + "</urlset>\n", encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")

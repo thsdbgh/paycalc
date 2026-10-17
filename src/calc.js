@@ -290,7 +290,66 @@
     return { rows: rows, totalInterest: ti, totalPayment: principal + ti, first: rows[0].payment, max: Math.max.apply(null, rows.map(function (x) { return x.payment; })) };
   }
 
+  // ---- 월 급여 (근무기록 기반, 엑셀 템플릿과 같은 규칙) ----
+  function tmin(s) { var p = String(s || "").split(":"); return p.length < 2 ? NaN : (+p[0]) * 60 + (+p[1]); }
+  function shiftHours(sh) {
+    if (sh.absent) return { hours: 0, night: 0, ot: 0 };
+    var a = tmin(sh.start), b = tmin(sh.end);
+    if (isNaN(a) || isNaN(b)) return { hours: 0, night: 0, ot: 0 };
+    var span = ((b - a) % 1440 + 1440) % 1440, end = a + span;
+    var hours = Math.max(0, span / 60 - (+sh.breakMin || 0) / 60);
+    var ov = function (x, y) { return Math.max(0, Math.min(end, y) - Math.max(a, x)); };
+    var night = (ov(0, 360) + ov(1320, 1800) + ov(2760, 2880)) / 60;
+    return { hours: hours, night: Math.min(hours, night), ot: Math.max(0, hours - 8) };
+  }
+  function ymd(dt) { return dt.toISOString().slice(0, 10); }
+  // 귀속월의 주휴 판정 주: 일요일이 그 달에 속하는 월~일
+  function payrollWeeks(ym) {
+    var y = +ym.slice(0, 4), m = +ym.slice(5, 7), first = new Date(Date.UTC(y, m - 1, 1));
+    var dow = (first.getUTCDay() + 6) % 7; // 월=0
+    var firstSun = new Date(first.getTime() + ((6 - dow + 7) % 7) * 86400000);
+    var weeks = [];
+    for (var k = 0; k < 6; k++) {
+      var sun = new Date(firstSun.getTime() + k * 7 * 86400000);
+      if (sun.getUTCMonth() !== m - 1) break;
+      weeks.push({ start: ymd(new Date(sun.getTime() - 6 * 86400000)), end: ymd(sun) });
+    }
+    return weeks;
+  }
+  // emp: {hourly, weeklyHours, deduction:'none'|'33'|'ins', family, kids, nontax}
+  function monthlyPayroll(emp, shifts, ym, size5) {
+    var h = emp.hourly, inMonth = function (dt) { return dt.slice(0, 7) === ym; };
+    var days = 0, hours = 0, night = 0, ot = 0;
+    shifts.forEach(function (sh) {
+      if (!inMonth(sh.date)) return;
+      var r = shiftHours(sh); if (r.hours > 0) days++;
+      hours += r.hours; night += r.night; ot += r.ot;
+    });
+    var jh = juhyuHours(emp.weeklyHours), weeks = payrollWeeks(ym).map(function (w) {
+      var wh = 0, ab = 0;
+      shifts.forEach(function (sh) { if (sh.date >= w.start && sh.date <= w.end) { if (sh.absent) ab++; else wh += shiftHours(sh).hours; } });
+      var pay = jh > 0 && ab === 0 && wh > 0 ? Math.round(jh * h) : 0;
+      return { start: w.start, end: w.end, hours: wh, absent: ab, juhyu: pay };
+    });
+    var base = Math.round(hours * h), juhyu = weeks.reduce(function (s, w) { return s + w.juhyu; }, 0);
+    var otP = size5 ? Math.round(ot * h * 0.5) : 0, nightP = size5 ? Math.round(night * h * 0.5) : 0;
+    var extra = Math.round(+emp.extra || 0), nontax = Math.round(+emp.nontax || 0);
+    var gross = base + juhyu + otP + nightP + extra + nontax, taxable = gross - nontax, ded = [];
+    if (emp.deduction === "33") { var f = freelancer(taxable); ded = [["소득세 (3%)", f.tax], ["지방소득세", f.local]]; }
+    else if (emp.deduction === "ins") {
+      var insOn = (emp.weeklyHours || 0) * WEEKS_PER_MONTH >= 60;
+      var i = insurance(taxable, +ym.slice(0, 4) >= 2027 ? 2027 : 2026), t = incomeTax(taxable, emp.family || 1, emp.kids || 0);
+      ded = (insOn ? [["국민연금", i.np], ["건강보험", i.hi], ["장기요양보험", i.ltc], ["고용보험", i.ei]] : [])
+            .concat([["근로소득세", t.tax], ["지방소득세", t.local]]);
+    }
+    var dsum = ded.reduce(function (s, x) { return s + x[1]; }, 0);
+    return { days: days, hours: hours, night: night, ot: ot, juhyuHours: jh, weeks: weeks, paidWeeks: weeks.filter(function (w) { return w.juhyu > 0; }).length,
+             base: base, juhyu: juhyu, otPay: otP, nightPay: nightP, extra: extra, nontax: nontax, gross: gross, taxable: taxable,
+             deductions: ded, deductionTotal: dsum, net: gross - dsum };
+  }
+
   var api = { MIN_WAGE: MIN_WAGE, INS: INS, UI_2026: UI_2026, UI_DAYS: UI_DAYS, num: num,
+    shiftHours: shiftHours, payrollWeeks: payrollWeeks, monthlyPayroll: monthlyPayroll,
     retirementTax: retirementTax, tenureYears: tenureYears, basicTax: basicTax, parentalLeave: parentalLeave, loanSchedule: loanSchedule,
     overtimePay: overtimePay, dailyWorkerTax: dailyWorkerTax,
     incomeTax: incomeTax, childDeduction: childDeduction, netPay: netPay, annualForNet: annualForNet, employerCost: employerCost,

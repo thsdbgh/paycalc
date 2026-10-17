@@ -1,0 +1,63 @@
+-- 급여계산소 사장님 앱 (Cloudflare D1)
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  pw_hash TEXT NOT NULL,
+  pw_salt TEXT NOT NULL,
+  pw_iter INTEGER NOT NULL,
+  plan TEXT NOT NULL DEFAULT 'free',
+  pro_requested INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE TABLE IF NOT EXISTS businesses (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL DEFAULT '',
+  ceo TEXT NOT NULL DEFAULT '',
+  size5 INTEGER NOT NULL DEFAULT 0,
+  payday INTEGER NOT NULL DEFAULT 10
+);
+CREATE TABLE IF NOT EXISTS employees (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  birth TEXT NOT NULL DEFAULT '',
+  hourly INTEGER NOT NULL,
+  weekly_hours REAL NOT NULL,
+  deduction TEXT NOT NULL DEFAULT 'none',
+  family INTEGER NOT NULL DEFAULT 1,
+  kids INTEGER NOT NULL DEFAULT 0,
+  share_token TEXT NOT NULL UNIQUE,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_emp_user ON employees(user_id, active);
+CREATE TABLE IF NOT EXISTS shifts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  date TEXT NOT NULL,
+  start TEXT NOT NULL DEFAULT '',
+  end TEXT NOT NULL DEFAULT '',
+  break_min INTEGER NOT NULL DEFAULT 0,
+  absent INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(employee_id, date)
+);
+CREATE INDEX IF NOT EXISTS idx_shifts_emp_date ON shifts(employee_id, date);
+CREATE TABLE IF NOT EXISTS monthly_extras (
+  employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  ym TEXT NOT NULL,
+  extra INTEGER NOT NULL DEFAULT 0,
+  nontax INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (employee_id, ym)
+);
+CREATE TABLE IF NOT EXISTS login_attempts (
+  key TEXT NOT NULL,
+  ts INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_login_attempts ON login_attempts(key, ts);

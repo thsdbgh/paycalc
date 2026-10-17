@@ -1,0 +1,21 @@
+{
+  // 급여계산소: 정적 사이트(docs/) + 사장님 앱 API(worker/index.js) + D1
+  "name": "paycalc",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./docs",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "geubyeo-app",
+      "database_id": "382b8e53-705a-4e26-aa99-c5c013e45fb9"
+    }
+  ],
+  "observability": { "enabled": true }
+}
