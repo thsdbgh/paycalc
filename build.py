@@ -10,6 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 SRC, DIST = ROOT / "src", ROOT / "dist"
 SITE_NAME = "급여계산소"
+# 검색엔진 소유 확인 (지우지 마세요)
+VERIFY_META = '<meta name="naver-site-verification" content="713dec460b0c42601ce5efc3b8c1279d006d818d">'
 UPDATED = "2026-10-17"
 
 ap = argparse.ArgumentParser()
@@ -89,6 +91,7 @@ def head(title, desc, canonical, extra_ld=None):
 <meta property="og:url" content="{canonical}"><meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="{BASE}/og.png"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1f3a5f">
+{VERIFY_META}
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
