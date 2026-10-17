@@ -73,4 +73,18 @@ t("가산수당: 야간 4h 가산분만 20,000", () => assert.strictEqual(C.over
 t("일용직: 일급 20만 → 소득세 1,350", () => assert.strictEqual(C.dailyWorkerTax(200000).tax, 1350));
 t("일용직: 일급 187,000 → 999원 소액부징수 0", () => assert.strictEqual(C.dailyWorkerTax(187000).tax, 0));
 t("일용직: 15만 이하 0원", () => assert.strictEqual(C.dailyWorkerTax(150000).tax, 0));
+t("퇴직소득세: 20년 2억 → 7,025,000 + 지방 702,500", () => { const r = C.retirementTax(200000000, 20);
+  assert.strictEqual(r.tax, 7025000); assert.strictEqual(r.local, 702500); assert.strictEqual(r.serviceDeduction, 40000000); });
+t("퇴직소득세: 근속공제가 더 크면 0원", () => assert.strictEqual(C.retirementTax(3000000, 5).tax, 0));
+t("근속연수: 2년 8개월 → 3년 (끝수 올림)", () => assert.strictEqual(C.tenureYears("2024-03-01", "2026-10-31"), 3));
+t("근속연수: 정확히 2년 → 2년", () => assert.strictEqual(C.tenureYears("2024-11-01", "2026-10-31"), 2));
+t("육아휴직: 일반 12개월 상한 → 2,310만", () => assert.strictEqual(C.parentalLeave(5000000, 12, "normal").total, 23100000));
+t("육아휴직: 6+6 6개월 통상 500만 → 2,000만", () => assert.strictEqual(C.parentalLeave(5000000, 6, "both").total, 20000000));
+t("육아휴직: 하한 70만", () => assert.strictEqual(C.parentalLeave(500000, 1, "normal").rows[0].amount, 700000));
+t("육아휴직: 7개월차 80%", () => assert.strictEqual(C.parentalLeave(1500000, 7, "normal").rows[6].amount, 1200000));
+t("육아휴직: 한부모 1개월 300만", () => assert.strictEqual(C.parentalLeave(4000000, 1, "single").rows[0].amount, 3000000));
+t("대출: 1억 5% 30년 원리금균등 월 536,822", () => assert.strictEqual(C.loanSchedule(100000000, 5, 360, "ann").first, 536822));
+t("대출: 원금균등 첫 달 = 원금/n + 이자", () => assert.strictEqual(C.loanSchedule(12000000, 6, 12, "prin").first, 1060000));
+t("대출: 만기일시 총이자 = 원금×연이율", () => assert.strictEqual(C.loanSchedule(10000000, 6, 12, "bullet").totalInterest, 600000));
+t("대출: 잔액 0으로 끝남", () => assert.strictEqual(C.loanSchedule(100000000, 4.2, 120, "ann").rows[119].balance, 0));
 console.log(`\n${n} tests passed`);

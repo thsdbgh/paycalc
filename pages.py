@@ -145,7 +145,7 @@ related=["alba", "juhyu", "insurance"], promo=False,
 # ------------------------------------------------------------------ 퇴직금
 dict(
 slug="severance", short="퇴직금 계산기", tag="1년 이상 일했다면 꼭 확인",
-title="퇴직금 계산기 — 입사일·퇴사일·월급으로 예상 퇴직금 계산",
+title="퇴직금 계산기 2026 — 퇴직소득세 뺀 세후 퇴직금까지 계산",
 desc="입사일, 마지막 근무일, 최근 3개월 급여를 넣으면 평균임금과 예상 퇴직금을 계산합니다. 상여금·연차수당 반영, 아르바이트도 가능.",
 h1="퇴직금 계산기",
 lead="입사일과 마지막 근무일, 퇴사 전 3개월 동안 받은 세전 급여를 넣어 주세요.",
@@ -164,7 +164,10 @@ U.set('result','<p class="big">'+U.won(r.severance)+'<small>예상 퇴직금 (�
  (r.eligible?'':U.note('재직기간이 1년 미만이라 법정 퇴직금 지급 대상이 아닙니다.','warn'))+
  U.row('재직일수',U.fmt(r.tenureDays,0)+'일')+U.row('평균임금 산정기간',r.periodDays+'일')+
  U.row('1일 평균임금',U.won(r.avgDaily))+U.row('계산식','1일 평균임금 × 30 × 재직일수 ÷ 365')+
- U.note('퇴직소득세가 원천징수될 수 있습니다. IRP 계좌로 받으면 과세가 이연됩니다.'));
+ (r.eligible?(function(){var y=Calc.tenureYears(s,l),t=Calc.retirementTax(r.severance,y);
+  return U.row('근속연수 (1년 미만 올림)',y+'년')+U.row('퇴직소득세','−'+U.won(t.tax))+U.row('지방소득세','−'+U.won(t.local))+
+  U.row('세후 퇴직금 (일시금 수령 시)',U.won(t.net),true)})():'')+
+ U.note('IRP 계좌로 받아 연금으로 나눠 받으면 퇴직소득세를 30~40% 줄일 수 있습니다.'));
 """,
 article="""
 <h2>퇴직금 받는 조건</h2>
@@ -176,6 +179,12 @@ article="""
 <p>퇴직일은 <b>마지막 근무일의 다음 날</b>입니다. 예를 들어 10월 31일까지 일했다면 퇴직일은 11월 1일이고, 평균임금 산정기간은 8월 1일~10월 31일(92일)입니다.</p>
 <h2>예시</h2>
 <p>2024년 3월 1일 입사, 2026년 10월 31일 퇴사, 최근 3개월 급여 합계 750만 원이라면 1일 평균임금은 약 81,522원, 재직일수 975일로 예상 퇴직금은 약 653만 원입니다.</p>
+<h2>퇴직소득세는 이렇게 계산합니다</h2>
+<ol><li><b>근속연수공제</b>: 5년 이하 연 100만 원, 6~10년 500만 원 + 5년 초과 1년당 200만 원, 11~20년 1,500만 원 + 10년 초과 1년당 250만 원, 20년 초과 4,000만 원 + 1년당 300만 원</li>
+<li><b>환산급여</b> = (퇴직금 − 근속연수공제) × 12 ÷ 근속연수</li>
+<li><b>환산급여공제</b>: 800만 원 이하 전액, 7,000만 원까지 800만 원 + 초과분 60%, 1억 원까지 4,520만 원 + 55%, 3억 원까지 6,170만 원 + 45%, 그 이상 1억 5,170만 원 + 35%</li>
+<li><b>세액</b> = (환산급여 − 환산급여공제)에 기본세율을 적용한 금액 ÷ 12 × 근속연수. 지방소득세는 그 10%입니다.</li></ol>
+<p>근속연수는 1년 미만 끝수를 1년으로 올립니다. 예를 들어 근속 20년, 퇴직금 2억 원이면 퇴직소득세는 약 702만 원, 지방소득세를 합치면 약 773만 원입니다.</p>
 <h2>주의할 점</h2>
 <ul><li>평균임금이 통상임금보다 낮으면 통상임금으로 계산합니다.</li><li>퇴직 후 <b>14일 이내</b>에 지급해야 하며, 늦으면 연 20%의 지연이자가 붙습니다.</li>
 <li>육아휴직·산재 휴업 기간 등은 평균임금 산정기간에서 빠지므로 실제 금액이 달라질 수 있습니다.</li></ul>
@@ -624,4 +633,94 @@ faq=[
 ],
 sources=[LAW("소득세법 제14조·제47조·제59조, 제86조(소액부징수)")],
 related=["freelancer", "alba", "overtime"], promo=False,
+))
+
+PAGES.insert(7, dict(
+slug="parental-leave", short="육아휴직 급여 계산기", tag="월별 지급액·6+6·한부모", group="worker",
+title="육아휴직 급여 계산기 2026 — 월 250만 원 상한, 6+6 부모육아휴직제 반영",
+desc="통상임금과 휴직 개월수를 넣으면 2025년 개편 기준(1~3개월 250만, 4~6개월 200만, 7개월~ 160만 상한)으로 월별 육아휴직 급여와 총액을 계산합니다. 6+6 부모육아휴직제·한부모 특례 포함.",
+h1="육아휴직 급여 계산기",
+lead="월 통상임금과 휴직 기간을 넣으면 달마다 받는 금액과 합계를 계산합니다. 2025년 1월 1일 이후 시작한 육아휴직 기준입니다.",
+fields=[
+ dict(id="wage", type="money", label="월 통상임금", hint="원 (기본급+고정수당)", value="3,500,000", pair=True),
+ dict(id="months", type="select", label="휴직 기간", value="12", options=[(str(i), f"{i}개월") for i in range(1, 19)]),
+ dict(id="mode", type="seg", label="유형", value="normal", options=[("normal", "일반"), ("both", "6+6 부모 함께"), ("single", "한부모")]),
+],
+js="""
+var w=U.val('wage'),m=+U.str('months'),mode=%s;if(!w){U.set('result',U.note('통상임금을 입력하세요.'));return;}
+var r=Calc.parentalLeave(w,m,mode),rows=r.rows.map(function(x){return '<tr><td>'+x.month+'개월차</td><td>'+(x.rate*100)+'%%</td><td>'+U.won(x.cap)+'</td><td><b>'+U.won(x.amount)+'</b></td></tr>'}).join('');
+U.set('result','<p class="big">'+U.won(r.total)+'<small>'+m+'개월 합계</small></p>'+
+ '<div style="overflow-x:auto"><table class="t"><tr><th>기간</th><th>지급률</th><th>상한</th><th>받는 금액</th></tr>'+rows+'</table></div>'+
+ (m>12?U.note('12개월을 넘는 휴직은 부모가 각각 3개월 이상 쓰거나 한부모·장애아 부모일 때 가능합니다(최대 18개월).'):'')+
+ (mode==='both'?U.note('6+6은 자녀 생후 18개월 이내에 부모가 모두 육아휴직을 쓸 때 각자에게 적용됩니다.'):''));
+""" % (RADIO % "mode"),
+article="""
+<h2>2025년부터 바뀐 육아휴직 급여</h2>
+<table class="t"><tr><th>기간</th><th>지급률</th><th>월 상한</th></tr>
+<tr><td>1~3개월</td><td>통상임금 100%</td><td>250만 원</td></tr>
+<tr><td>4~6개월</td><td>통상임금 100%</td><td>200만 원</td></tr>
+<tr><td>7개월 이후</td><td>통상임금 80%</td><td>160만 원</td></tr></table>
+<p>하한액은 월 70만 원입니다. 예전처럼 급여 일부를 복직 6개월 뒤에 주던 '사후지급금'은 없어져, 휴직 기간 중 전액을 받습니다. 1년을 쓰면 최대 2,310만 원입니다.</p>
+<h2>6+6 부모육아휴직제</h2>
+<p>자녀가 생후 18개월 이내일 때 부모가 모두 육아휴직을 쓰면, 각자 첫 6개월 동안 통상임금 100%를 받고 상한이 달마다 올라갑니다.</p>
+<table class="t"><tr><th>개월</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+<tr><td>월 상한</td><td>250만</td><td>250만</td><td>300만</td><td>350만</td><td>400만</td><td>450만</td></tr></table>
+<p>부부가 함께 1년씩 쓰면 각자 최대 2,960만 원, 합계 5,920만 원입니다.</p>
+<h2>한부모 근로자</h2>
+<p>한부모는 첫 3개월 상한이 300만 원입니다. 이후 기간은 일반 기준과 같습니다.</p>
+<h2>통상임금이란?</h2>
+<p>매달 정기적으로 같은 금액을 받는 기본급과 고정수당을 합친 금액입니다. 연장근로수당이나 성과급처럼 달마다 달라지는 돈은 빠집니다. 정확한 금액은 회사 급여 담당자에게 확인하세요.</p>
+""",
+faq=[
+ ("육아휴직 급여는 어디서 신청하나요?", "휴직을 시작하고 1개월이 지난 뒤부터 매달, 고용24(work24.go.kr)나 거주지 고용센터에서 신청합니다. 휴직이 끝난 뒤 12개월 안에 신청해야 합니다."),
+ ("받을 수 있는 조건은?", "육아휴직 시작 전 고용보험 피보험단위기간이 180일 이상이어야 하고, 만 8세 이하 또는 초등학교 2학년 이하 자녀를 키워야 합니다."),
+ ("휴직 중 회사에서 돈을 받으면 깎이나요?", "회사에서 받는 금액과 육아휴직 급여를 합쳐 통상임금을 넘으면 넘는 만큼 육아휴직 급여가 줄어듭니다."),
+],
+sources=[("육아휴직 급여 월 최대 250만 원 인상 (복지로)", "https://blog.bokjiro.go.kr/1673"), LAW("고용보험법 시행령 제95조")],
+related=["salary", "unemployment", "severance"], promo=False,
+))
+
+PAGES.append(dict(
+slug="loan", short="대출 이자 계산기", tag="원리금균등·원금균등·만기일시", group="worker",
+title="대출 이자 계산기 — 원리금균등·원금균등·만기일시 월 상환액과 상환표",
+desc="대출금, 금리, 기간을 넣으면 원리금균등·원금균등·만기일시 상환 방식별 월 상환액, 총이자, 회차별 상환표를 계산합니다.",
+h1="대출 이자 계산기",
+lead="대출 금액과 연 금리, 기간을 넣으면 매달 갚을 돈과 총이자를 계산합니다.",
+fields=[
+ dict(id="p", type="money", label="대출 금액", hint="원", value="100,000,000"),
+ dict(id="rate", type="number", label="연 금리", hint="%", value="4.5", step="0.01", pair=True),
+ dict(id="months", type="number", label="대출 기간", hint="개월", value="360", step="1"),
+ dict(id="type", type="seg", label="상환 방식", value="ann", options=[("ann", "원리금균등"), ("prin", "원금균등"), ("bullet", "만기일시")]),
+],
+js="""
+var p=U.val('p'),r=U.val('rate'),n=U.val('months'),ty=%s;if(!p||!n){U.set('result',U.note('금액과 기간을 입력하세요.'));return;}
+if(n>600){U.set('result',U.note('기간은 600개월(50년) 이하로 입력하세요.','warn'));return;}
+var s=Calc.loanSchedule(p,r,n,ty),R=s.rows,show=R.length<=24?R:R.slice(0,12).concat([null]).concat(R.slice(-6));
+var tr=show.map(function(x){return x?'<tr><td>'+x.i+'</td><td>'+U.won(x.payment)+'</td><td>'+U.won(x.principal)+'</td><td>'+U.won(x.interest)+'</td><td>'+U.won(x.balance)+'</td></tr>':'<tr><td colspan="5">…</td></tr>'}).join('');
+U.set('result','<p class="big">'+U.won(s.first)+'<small>첫 달 상환액</small></p>'+
+ U.row('총이자',U.won(s.totalInterest))+U.row('총 상환액',U.won(s.totalPayment),true)+
+ (ty==='prin'?U.row('마지막 달 상환액',U.won(R[R.length-1].payment)):'')+
+ '<div style="overflow-x:auto"><table class="t"><tr><th>회차</th><th>상환액</th><th>원금</th><th>이자</th><th>잔액</th></tr>'+tr+'</table></div>');
+""" % (RADIO % "type"),
+article="""
+<h2>상환 방식 비교</h2>
+<table class="t"><tr><th>방식</th><th>매달 내는 돈</th><th>총이자</th></tr>
+<tr><td>원리금균등</td><td>매달 같음</td><td>중간</td></tr>
+<tr><td>원금균등</td><td>처음 많고 점점 줄어듦</td><td>가장 적음</td></tr>
+<tr><td>만기일시</td><td>이자만 내다 마지막에 원금 전액</td><td>가장 많음</td></tr></table>
+<h2>계산 방법</h2>
+<p class="formula">원리금균등 월 상환액 = 대출금 × 월이율 ÷ (1 − (1 + 월이율)<sup>−개월수</sup>)</p>
+<p>월이율은 연 금리 ÷ 12입니다. 1억 원을 연 5%, 30년(360개월) 원리금균등으로 빌리면 매달 536,822원을 내고, 총이자는 약 9,326만 원입니다.</p>
+<h2>이자를 줄이는 방법</h2>
+<ul><li>같은 조건이면 원금균등이 총이자가 가장 적습니다. 대신 초기 부담이 큽니다.</li>
+<li>중도상환수수료가 없거나 면제 기간이 지났다면 일부 상환으로 이자를 줄일 수 있습니다.</li>
+<li>금리가 0.1%포인트만 달라도 장기 대출에서는 총이자가 수백만 원 차이 날 수 있습니다.</li></ul>
+<p class="src">실제 상환액은 은행의 일할 계산 방식, 거치기간, 금리 변동에 따라 조금 다를 수 있습니다.</p>
+""",
+faq=[
+ ("원리금균등과 원금균등 중 무엇이 유리한가요?", "총이자는 원금균등이 적고, 매달 부담을 일정하게 하고 싶다면 원리금균등이 편합니다."),
+ ("거치기간이 있으면요?", "거치기간 동안에는 이자만 내고, 그 뒤 남은 기간에 원금을 나눠 갚습니다. 이 계산기는 거치기간이 없는 경우를 계산합니다."),
+],
+sources=[("금융감독원 금융상품 통합비교공시 (금융상품한눈에)", "https://finlife.fss.or.kr/")],
+related=["salary", "salary-table", "severance"], promo=False,
 ))

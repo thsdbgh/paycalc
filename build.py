@@ -32,6 +32,7 @@ from guides import GUIDES  # noqa: E402
 import subprocess
 SAL = json.loads(subprocess.check_output(["node", str(ROOT / "tools" / "precompute.js")]))
 TABLE_TILE = dict(slug="salary-table", short="연봉 실수령액표", tag="2천만~1억5천 한눈에")
+WAGE_TILE = dict(slug="wage-table", short="시급별 월급표", tag="시급 10,320원~2만 원")
 
 def field_html(f):
     t = f["type"]
@@ -122,7 +123,7 @@ def build_page(p):
         {"@type": "ListItem", "position": 2, "name": p["short"], "item": canonical}]}
     faq = "".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in p["faq"])
     related = "".join(f'<a class="tile" href="{r["slug"]}.html"><b>{r["short"]}</b><span>{r["tag"]}</span></a>'
-                      for r in PAGES + [TABLE_TILE] if r["slug"] in p["related"])
+                      for r in PAGES + [TABLE_TILE, WAGE_TILE] if r["slug"] in p["related"])
     srcs = "".join(f'<li><a href="{u}" rel="nofollow noopener" target="_blank">{html.escape(t)}</a></li>' for t, u in p["sources"])
     body = f"""<p class="crumb"><a href="index.html">홈</a> › {p['short']}</p>
 <h1>{p['h1']}</h1><p class="lead">{p['lead']}</p>
@@ -144,7 +145,7 @@ def build_page(p):
 
 def build_index():
     tile = lambda p: f'<a class="tile" href="{p["slug"]}.html"><b>{p["short"]}</b><span>{p["tag"]}</span></a>'
-    tiles = "".join(tile(p) for p in PAGES if p["group"] == "worker") + tile(TABLE_TILE)
+    tiles = "".join(tile(p) for p in PAGES if p["group"] == "worker") + tile(TABLE_TILE) + tile(WAGE_TILE)
     boss = "".join(tile(p) for p in PAGES if p["group"] == "boss") + \
         "".join(tile(p) for p in PAGES if p["slug"] in ("juhyu", "minwage"))
     body = f"""<h1 style="margin-top:24px">월급·알바비·퇴직금, 바로 계산하세요</h1>
@@ -307,6 +308,54 @@ def guides_index():
 NOT_FOUND = """<p class="crumb"><a href="index.html">홈</a></p><h1>페이지를 찾을 수 없어요</h1>
 <p class="lead">주소가 바뀌었거나 없는 페이지입니다. 아래에서 필요한 계산기를 찾아보세요.</p>"""
 
+def wage_page(i):
+    H = SAL["hourly"]; r = H[i]; h = r["h"]; mw = SAL["minWage"]
+    slug = f"wage-{h}"; canonical = f"{BASE}/{slug}"
+    w40 = r["weeks"][-1]; w20 = r["weeks"][2]
+    title = f"시급 {h:,}원 월급 — 주 40시간 {w40['monthTotal']:,}원, 주휴수당 포함 근무시간별 표"
+    desc = (f"시급 {h:,}원이면 주 40시간 기준 월급은 주휴수당 포함 {w40['monthTotal']:,}원, 주 20시간이면 {w20['monthTotal']:,}원입니다. "
+            f"근무시간별 주급·월급과 4대보험·세금 뗀 실수령액을 확인하세요.")
+    ok26 = h >= mw["2026"]; ok27 = h >= mw["2027"]
+    status = ("2026년·2027년 최저임금을 모두 넘습니다." if ok27 else
+              "2026년 최저임금(10,320원) 이상이지만 2027년 최저임금(10,700원)보다 낮아 2027년 1월부터는 올려야 합니다." if ok26 else
+              "2026년 최저임금(10,320원)보다 낮습니다.")
+    trs = "".join(f"<tr><td>주 {x['w']}시간</td><td>{x['weekTotal']:,}원</td><td>{x['monthHours']}시간</td><td><b>{x['monthTotal']:,}원</b></td></tr>" for x in r["weeks"])
+    nb = lambda x, lab: f'<a class="tile" href="wage-{x["h"]}.html"><b>{lab} 시급 {x["h"]:,}원</b><span>주40h 월 {x["weeks"][-1]["monthTotal"]:,}원</span></a>' if x else ""
+    prev_ = H[i - 1] if i > 0 else None; next_ = H[i + 1] if i + 1 < len(H) else None
+    faq = [(f"시급 {h:,}원이면 한 달에 얼마인가요?", f"주 40시간 일하면 주휴수당을 포함해 월 {w40['monthTotal']:,}원(209시간)입니다. 주 20시간이면 월 {w20['monthTotal']:,}원입니다."),
+           (f"시급 {h:,}원 주 40시간 실수령액은?", f"4대보험과 근로소득세를 빼면 월 약 {r['fullNet']:,}원입니다(부양가족 1인, 비과세 없음 기준)."),
+           (f"시급 {h:,}원은 최저임금 위반인가요?", status)]
+    faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": t}} for q, t in faq]}
+    body = f"""<p class="crumb"><a href="index.html">홈</a> › <a href="wage-table.html">시급별 월급표</a> › 시급 {h:,}원</p>
+<h1>시급 {h:,}원 월급 계산</h1>
+<p class="lead">주휴수당을 포함한 근무시간별 월급입니다. 한 달은 평균 4.345주로 계산했습니다.</p>
+<section class="card"><div class="result" style="margin-top:0">
+<p class="big">{w40['monthTotal']:,}원<small>주 40시간 월급 (세전)</small></p>
+<div class="r"><span>하루 8시간 일급</span><b>{r['day8']:,}원</b></div>
+<div class="r"><span>주 40시간 실수령 (4대보험·세금 공제)</span><b>{r['fullNet']:,}원</b></div>
+<div class="r"><span>주 20시간 3.3% 공제 후</span><b>{r['half33']:,}원</b></div>
+<div class="r strong"><span>연봉 환산 (주 40시간)</span><b>{w40['monthTotal']*12:,}원</b></div>
+</div><p class="note {'good' if ok27 else 'warn'}">{status}</p></section>
+{ad_slot('top')}
+<article><h2>근무시간별 월급 (주휴수당 포함)</h2>
+<div style="overflow-x:auto"><table class="t"><tr><th>근무</th><th>주급</th><th>월 환산시간</th><th>월급</th></tr>{trs}</table></div>
+<p>주 15시간 미만은 주휴수당이 없어 주급이 근무시간 × 시급입니다. 주 15시간 이상이면 (주 근무시간 ÷ 40 × 8)시간분의 주휴수당이 더해집니다.</p>
+<h2>계산 방법</h2><p class="formula">월급 = (주 근무시간 + 주휴시간) × 4.345 × {h:,}원</p>
+<p>상시 5인 이상 사업장에서 야간(22~06시)·연장(1일 8시간 초과) 근무를 했다면 50%가 더 붙습니다. 정확한 금액은 <a href="alba.html">알바 월급 계산기</a>와 <a href="overtime.html">연장·야간수당 계산기</a>에서 확인하세요.</p></article>
+{promo()}
+<h2>자주 묻는 질문</h2>{"".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(t)}</p></details>" for q, t in faq)}
+{ad_slot('bottom')}
+<h2>다른 시급</h2><div class="grid">{nb(prev_, "이전")}{nb(next_, "다음")}</div>"""
+    return slug, head(title, desc, canonical, [faq_ld]) + body + foot() + "</body></html>"
+
+def wage_table():
+    trs = "".join(f'<tr><td><a href="wage-{r["h"]}.html">{r["h"]:,}원</a></td><td>{r["weeks"][2]["monthTotal"]:,}</td><td>{r["weeks"][4]["monthTotal"]:,}</td><td><b>{r["weeks"][-1]["monthTotal"]:,}</b></td></tr>' for r in SAL["hourly"])
+    body = f"""<p class="crumb"><a href="index.html">홈</a> › 시급별 월급표</p><h1>시급별 월급표 (주휴수당 포함)</h1>
+<p class="lead">시급과 주 근무시간별 세전 월급입니다. 시급을 누르면 실수령액과 자세한 표를 볼 수 있습니다.</p>
+<div style="overflow-x:auto"><table class="t"><tr><th>시급</th><th>주 20시간</th><th>주 30시간</th><th>주 40시간</th></tr>{trs}</table></div>{ad_slot('mid')}"""
+    return head("시급별 월급표 2026·2027 — 시급 10,320원~20,000원 주휴수당 포함 월급", "시급별·근무시간별 월급을 주휴수당 포함으로 한눈에 비교하세요. 2026년 최저임금 10,320원, 2027년 10,700원 반영.", f"{BASE}/wage-table") + body + foot() + "</body></html>"
+
 def main():
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -321,6 +370,10 @@ def main():
         slug, page = salary_page(i)
         (DIST / f"{slug}.html").write_text(page, encoding="utf-8"); sal_urls.append(f"{BASE}/{slug}")
     (DIST / "salary-table.html").write_text(salary_table(), encoding="utf-8")
+    for i in range(len(SAL["hourly"])):
+        slug, page = wage_page(i)
+        (DIST / f"{slug}.html").write_text(page, encoding="utf-8"); sal_urls.append(f"{BASE}/{slug}")
+    (DIST / "wage-table.html").write_text(wage_table(), encoding="utf-8")
     for g in GUIDES:
         (DIST / f"{g['slug']}.html").write_text(guide_page(g), encoding="utf-8")
     (DIST / "guides.html").write_text(guides_index(), encoding="utf-8")
@@ -330,7 +383,7 @@ def main():
     shutil.copy(SRC / "og.png", DIST / "og.png")
     (DIST / "about.html").write_text(simple_page("about", "사이트 소개", ABOUT), encoding="utf-8")
     (DIST / "privacy.html").write_text(simple_page("privacy", "개인정보처리방침", PRIVACY), encoding="utf-8")
-    urls = [BASE + "/"] + [f"{BASE}/{p['slug']}" for p in PAGES] + [f"{BASE}/salary-table", f"{BASE}/guides"] + [f"{BASE}/{g['slug']}" for g in GUIDES] + sal_urls + [f"{BASE}/about", f"{BASE}/privacy"]
+    urls = [BASE + "/"] + [f"{BASE}/{p['slug']}" for p in PAGES] + [f"{BASE}/salary-table", f"{BASE}/wage-table", f"{BASE}/guides"] + [f"{BASE}/{g['slug']}" for g in GUIDES] + sal_urls + [f"{BASE}/about", f"{BASE}/privacy"]
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         + "".join(f"<url><loc>{u}</loc><lastmod>{UPDATED}</lastmod></url>" for u in urls) + "</urlset>\n", encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")

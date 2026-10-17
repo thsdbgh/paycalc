@@ -1,0 +1,59 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대출 이자 계산기 — 원리금균등·원금균등·만기일시 월 상환액과 상환표</title>
+<meta name="description" content="대출금, 금리, 기간을 넣으면 원리금균등·원금균등·만기일시 상환 방식별 월 상환액, 총이자, 회차별 상환표를 계산합니다.">
+<link rel="canonical" href="https://geubyeo.com/loan">
+<meta property="og:type" content="website"><meta property="og:site_name" content="급여계산소">
+<meta property="og:title" content="대출 이자 계산기 — 원리금균등·원금균등·만기일시 월 상환액과 상환표"><meta property="og:description" content="대출금, 금리, 기간을 넣으면 원리금균등·원금균등·만기일시 상환 방식별 월 상환액, 총이자, 회차별 상환표를 계산합니다.">
+<meta property="og:url" content="https://geubyeo.com/loan"><meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://geubyeo.com/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="naver-site-verification" content="618cfa4320abb8aee0706ca631d82705c9bdf8fe">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "급여계산소", "url": "https://geubyeo.com/"}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "원리금균등과 원금균등 중 무엇이 유리한가요?", "acceptedAnswer": {"@type": "Answer", "text": "총이자는 원금균등이 적고, 매달 부담을 일정하게 하고 싶다면 원리금균등이 편합니다."}}, {"@type": "Question", "name": "거치기간이 있으면요?", "acceptedAnswer": {"@type": "Answer", "text": "거치기간 동안에는 이자만 내고, 그 뒤 남은 기간에 원금을 나눠 갚습니다. 이 계산기는 거치기간이 없는 경우를 계산합니다."}}]}, {"@context": "https://schema.org", "@type": "WebApplication", "name": "대출 이자 계산기", "url": "https://geubyeo.com/loan", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "급여계산소", "item": "https://geubyeo.com/"}, {"@type": "ListItem", "position": 2, "name": "대출 이자 계산기", "item": "https://geubyeo.com/loan"}]}]</script>
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="index.html"><i>₩</i>급여계산소</a>
+<nav class="mini"><a href="salary.html">실수령액</a><a href="juhyu.html">주휴수당</a><a href="payslip.html">명세서</a><a href="guides.html">가이드</a></nav></div></header>
+<main class="wrap"><p class="crumb"><a href="index.html">홈</a> › 대출 이자 계산기</p>
+<h1>대출 이자 계산기</h1><p class="lead">대출 금액과 연 금리, 기간을 넣으면 매달 갚을 돈과 총이자를 계산합니다.</p>
+<section class="card"><form class="calc" novalidate><div class="field"><label for="p">대출 금액 <span class="hint">원</span></label><input id="p" inputmode="numeric" autocomplete="off" data-money value="100,000,000" placeholder=""></div><div class="two"><div class="field"><label for="rate">연 금리 <span class="hint">%</span></label><input id="rate" type="number" inputmode="decimal" step="0.01" min="0" value="4.5"></div><div class="field"><label for="months">대출 기간 <span class="hint">개월</span></label><input id="months" type="number" inputmode="decimal" step="1" min="0" value="360"></div></div><div class="field"><label>상환 방식</label><div class="seg"><label><input type="radio" name="type" value="ann" checked><span>원리금균등</span></label><label><input type="radio" name="type" value="prin"><span>원금균등</span></label><label><input type="radio" name="type" value="bullet"><span>만기일시</span></label></div></div></form>
+<div class="result" id="result" aria-live="polite"></div>
+<div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
+
+<article>
+<h2>상환 방식 비교</h2>
+<table class="t"><tr><th>방식</th><th>매달 내는 돈</th><th>총이자</th></tr>
+<tr><td>원리금균등</td><td>매달 같음</td><td>중간</td></tr>
+<tr><td>원금균등</td><td>처음 많고 점점 줄어듦</td><td>가장 적음</td></tr>
+<tr><td>만기일시</td><td>이자만 내다 마지막에 원금 전액</td><td>가장 많음</td></tr></table>
+<h2>계산 방법</h2>
+<p class="formula">원리금균등 월 상환액 = 대출금 × 월이율 ÷ (1 − (1 + 월이율)<sup>−개월수</sup>)</p>
+<p>월이율은 연 금리 ÷ 12입니다. 1억 원을 연 5%, 30년(360개월) 원리금균등으로 빌리면 매달 536,822원을 내고, 총이자는 약 9,326만 원입니다.</p>
+<h2>이자를 줄이는 방법</h2>
+<ul><li>같은 조건이면 원금균등이 총이자가 가장 적습니다. 대신 초기 부담이 큽니다.</li>
+<li>중도상환수수료가 없거나 면제 기간이 지났다면 일부 상환으로 이자를 줄일 수 있습니다.</li>
+<li>금리가 0.1%포인트만 달라도 장기 대출에서는 총이자가 수백만 원 차이 날 수 있습니다.</li></ul>
+<p class="src">실제 상환액은 은행의 일할 계산 방식, 거치기간, 금리 변동에 따라 조금 다를 수 있습니다.</p>
+</article>
+
+<h2>자주 묻는 질문</h2><details><summary>원리금균등과 원금균등 중 무엇이 유리한가요?</summary><p>총이자는 원금균등이 적고, 매달 부담을 일정하게 하고 싶다면 원리금균등이 편합니다.</p></details><details><summary>거치기간이 있으면요?</summary><p>거치기간 동안에는 이자만 내고, 그 뒤 남은 기간에 원금을 나눠 갚습니다. 이 계산기는 거치기간이 없는 경우를 계산합니다.</p></details>
+
+<h2>함께 쓰면 좋은 계산기</h2><div class="grid"><a class="tile" href="salary.html"><b>연봉 실수령액 계산기</b><span>세금·4대보험 뗀 진짜 월급</span></a><a class="tile" href="severance.html"><b>퇴직금 계산기</b><span>1년 이상 일했다면 꼭 확인</span></a><a class="tile" href="salary-table.html"><b>연봉 실수령액표</b><span>2천만~1억5천 한눈에</span></a></div>
+<h2>참고 기준</h2><ul class="src"><li><a href="https://finlife.fss.or.kr/" rel="nofollow noopener" target="_blank">금융감독원 금융상품 통합비교공시 (금융상품한눈에)</a></li></ul>
+<p class="src">최종 확인: 2026-10-17. 법령·고시가 바뀌면 결과가 달라질 수 있습니다.</p></main><footer><div class="wrap">
+<p><a href="salary.html">연봉 실수령액 계산기</a> <a href="juhyu.html">주휴수당 계산기</a> <a href="alba.html">알바 월급 계산기</a> <a href="minwage.html">최저임금 계산기</a> <a href="overtime.html">연장·야간·휴일수당 계산기</a> <a href="severance.html">퇴직금 계산기</a> <a href="unemployment.html">실업급여 계산기</a> <a href="parental-leave.html">육아휴직 급여 계산기</a> <a href="leave.html">연차 계산기</a> <a href="insurance.html">4대보험 계산기</a> <a href="daily-tax.html">일용직 세금 계산기</a> <a href="freelancer.html">3.3% 세금 계산기</a> <a href="labor-cost.html">사장님 인건비 계산기</a> <a href="payslip.html">임금명세서 만들기</a> <a href="loan.html">대출 이자 계산기</a></p>
+<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="https://github.com/thsdbgh/paycalc/issues" rel="noopener">문의</a></p>
+<p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
+정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
+<p>© 2026 급여계산소 · 기준 갱신일 2026-10-17</p></div></footer>
+<script src="calc.js"></script><script src="app.js"></script><script>bindCalc(function(){
+var p=U.val('p'),r=U.val('rate'),n=U.val('months'),ty=(document.querySelector('input[name="type"]:checked')||{}).value;if(!p||!n){U.set('result',U.note('금액과 기간을 입력하세요.'));return;}
+if(n>600){U.set('result',U.note('기간은 600개월(50년) 이하로 입력하세요.','warn'));return;}
+var s=Calc.loanSchedule(p,r,n,ty),R=s.rows,show=R.length<=24?R:R.slice(0,12).concat([null]).concat(R.slice(-6));
+var tr=show.map(function(x){return x?'<tr><td>'+x.i+'</td><td>'+U.won(x.payment)+'</td><td>'+U.won(x.principal)+'</td><td>'+U.won(x.interest)+'</td><td>'+U.won(x.balance)+'</td></tr>':'<tr><td colspan="5">…</td></tr>'}).join('');
+U.set('result','<p class="big">'+U.won(s.first)+'<small>첫 달 상환액</small></p>'+
+ U.row('총이자',U.won(s.totalInterest))+U.row('총 상환액',U.won(s.totalPayment),true)+
+ (ty==='prin'?U.row('마지막 달 상환액',U.won(R[R.length-1].payment)):'')+
+ '<div style="overflow-x:auto"><table class="t"><tr><th>회차</th><th>상환액</th><th>원금</th><th>이자</th><th>잔액</th></tr>'+tr+'</table></div>');
+});</script></body></html>

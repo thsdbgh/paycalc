@@ -20,4 +20,15 @@ const out = amounts.map((a) => {
     hourly: Math.round(won / 12 / 209),
   };
 });
-process.stdout.write(JSON.stringify({ nontax: NONTAX, minWage: C.MIN_WAGE, rows: out }));
+const hourlyList = [10320, 10700];
+for (let h = 10500; h <= 15000; h += 100) if (!hourlyList.includes(h)) hourlyList.push(h);
+for (let h = 16000; h <= 20000; h += 1000) hourlyList.push(h);
+hourlyList.sort((a, b) => a - b);
+const hourly = hourlyList.map((h) => {
+  const weeks = [10, 15, 20, 25, 30, 35, 40].map((w) => ({ w, ...C.albaMonthly(h, w) }));
+  const full = weeks[weeks.length - 1];
+  const fullNet = C.netPay(full.monthTotal * 12, 0, 1, 0, 2026);
+  const half33 = C.freelancer(weeks[2].monthTotal);
+  return { h, weeks, fullNet: fullNet.net, fullDed: fullNet.deductions, half33: half33.net, day8: h * 8 };
+});
+process.stdout.write(JSON.stringify({ nontax: NONTAX, minWage: C.MIN_WAGE, rows: out, hourly }));

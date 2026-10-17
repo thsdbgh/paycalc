@@ -94,3 +94,5 @@ table.t td,table.t th{font-variant-numeric:tabular-nums}
 @media (max-width:520px){.slip{padding:12px}.slip table.t{font-size:12.5px}.slip table.t th,.slip table.t td{padding:6px 5px}}
 nav.mini{white-space:nowrap}
 @media (max-width:440px){nav.mini a{margin-left:10px;font-size:13px}nav.mini a:nth-child(4){display:none}}
+.seg label{position:relative}.seg input{left:0;top:0;width:1px;height:1px;margin:0}
+table.t{word-break:normal;overflow-wrap:anywhere}

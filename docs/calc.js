@@ -228,7 +228,70 @@
     return { tax: per, local: local, perDayNet: dailyWage - per - local, totalTax: (per + local) * d, totalNet: (dailyWage - per - local) * d };
   }
 
+  // ---- 퇴직소득세 (소득세법 제48조·제55조, 2023년 이후 공제표) ----
+  function basicTax(base) {
+    var B = [[14e6, .06, 0], [50e6, .15, 1.26e6], [88e6, .24, 5.76e6], [150e6, .35, 15.44e6],
+             [300e6, .38, 19.94e6], [500e6, .40, 25.94e6], [1e9, .42, 35.94e6], [Infinity, .45, 65.94e6]];
+    if (base <= 0) return 0;
+    for (var i = 0; i < B.length; i++) if (base <= B[i][0]) return base * B[i][1] - B[i][2];
+  }
+  function tenureYears(startStr, lastDayStr) {
+    var start = d(startStr), retire = new Date(d(lastDayStr).getTime() + 86400000), y = 0;
+    while (addMonths(start, 12 * (y + 1)) <= retire) y++;
+    var rem = addMonths(start, 12 * y) < retire;
+    return Math.max(1, y + (rem ? 1 : 0)); // 1년 미만 끝수는 1년
+  }
+  function retirementTax(pay, years) {
+    var n = Math.max(1, Math.floor(years));
+    var svc = n <= 5 ? n * 1e6 : n <= 10 ? 5e6 + (n - 5) * 2e6 : n <= 20 ? 15e6 + (n - 10) * 2.5e6 : 40e6 + (n - 20) * 3e6;
+    var after = Math.max(0, pay - svc);
+    var conv = after * 12 / n;
+    var convDed = conv <= 8e6 ? conv : conv <= 70e6 ? 8e6 + (conv - 8e6) * .6 : conv <= 100e6 ? 45.2e6 + (conv - 70e6) * .55
+                : conv <= 300e6 ? 61.7e6 + (conv - 100e6) * .45 : 151.7e6 + (conv - 300e6) * .35;
+    var base = Math.max(0, conv - convDed);
+    var tax = Math.floor(basicTax(base) / 12 * n);
+    tax = floor10(tax);
+    var local = floor10(tax * 0.1);
+    return { serviceDeduction: svc, converted: Math.round(conv), convDeduction: Math.round(convDed), base: Math.round(base),
+             tax: tax, local: local, total: tax + local, net: pay - tax - local, years: n };
+  }
+
+  // ---- 육아휴직 급여 (2025.1.1 이후 개시, 고용보험법 시행령 제95조) ----
+  // mode: 'normal' 일반, 'both' 6+6 부모육아휴직(생후 18개월 이내, 부모 모두), 'single' 한부모
+  function parentalLeave(ordinaryWage, months, mode) {
+    var rows = [], total = 0, n = Math.min(Math.max(Math.floor(months), 1), 18);
+    var CAP66 = [2500000, 2500000, 3000000, 3500000, 4000000, 4500000];
+    for (var m = 1; m <= n; m++) {
+      var rate = m <= 6 ? 1.0 : 0.8, cap;
+      if (mode === 'both' && m <= 6) cap = CAP66[m - 1];
+      else if (mode === 'single' && m <= 3) cap = 3000000;
+      else cap = m <= 3 ? 2500000 : m <= 6 ? 2000000 : 1600000;
+      var amt = Math.max(700000, Math.min(ordinaryWage * rate, cap));
+      amt = Math.floor(amt);
+      rows.push({ month: m, rate: rate, cap: cap, amount: amt });
+      total += amt;
+    }
+    return { rows: rows, total: total };
+  }
+
+  // ---- 대출 상환 ----
+  // type: 'ann' 원리금균등, 'prin' 원금균등, 'bullet' 만기일시
+  function loanSchedule(principal, annualRate, months, type) {
+    var r = annualRate / 100 / 12, n = Math.max(1, Math.floor(months)), bal = principal, rows = [], ti = 0;
+    var pmt = r === 0 ? principal / n : principal * r / (1 - Math.pow(1 + r, -n));
+    for (var i = 1; i <= n; i++) {
+      var interest = Math.round(bal * r), prin;
+      if (type === 'prin') prin = i === n ? bal : Math.round(principal / n);
+      else if (type === 'bullet') prin = i === n ? bal : 0;
+      else prin = i === n ? bal : Math.round(pmt) - interest;
+      bal = bal - prin; ti += interest;
+      rows.push({ i: i, payment: prin + interest, principal: prin, interest: interest, balance: Math.max(0, bal) });
+    }
+    return { rows: rows, totalInterest: ti, totalPayment: principal + ti, first: rows[0].payment, max: Math.max.apply(null, rows.map(function (x) { return x.payment; })) };
+  }
+
   var api = { MIN_WAGE: MIN_WAGE, INS: INS, UI_2026: UI_2026, UI_DAYS: UI_DAYS, num: num,
+    retirementTax: retirementTax, tenureYears: tenureYears, basicTax: basicTax, parentalLeave: parentalLeave, loanSchedule: loanSchedule,
     overtimePay: overtimePay, dailyWorkerTax: dailyWorkerTax,
     incomeTax: incomeTax, childDeduction: childDeduction, netPay: netPay, annualForNet: annualForNet, employerCost: employerCost,
     juhyuHours: juhyuHours, juhyu: juhyu, albaMonthly: albaMonthly, minWageCheck: minWageCheck,
