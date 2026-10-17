@@ -1,0 +1,55 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>연차 계산기 — 입사일로 연차휴가 일수 계산 (1년 미만·근속연수별)</title>
+<meta name="description" content="입사일과 기준일을 넣으면 근로기준법에 따른 연차휴가 일수를 계산합니다. 1년 미만 월차, 3년차 이후 가산 연차, 최대 25일까지.">
+<link rel="canonical" href="https://thsdbgh.github.io/paycalc/leave">
+<meta property="og:type" content="website"><meta property="og:site_name" content="급여계산소">
+<meta property="og:title" content="연차 계산기 — 입사일로 연차휴가 일수 계산 (1년 미만·근속연수별)"><meta property="og:description" content="입사일과 기준일을 넣으면 근로기준법에 따른 연차휴가 일수를 계산합니다. 1년 미만 월차, 3년차 이후 가산 연차, 최대 25일까지.">
+<meta property="og:url" content="https://thsdbgh.github.io/paycalc/leave"><meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://thsdbgh.github.io/paycalc/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "급여계산소", "url": "https://thsdbgh.github.io/paycalc/"}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "1년만 일하고 퇴사하면 연차가 몇 일인가요?", "acceptedAnswer": {"@type": "Answer", "text": "1년 미만 기간에 생긴 최대 11일에, 1년을 채우고 다음 날까지 근로관계가 있으면 15일이 추가됩니다. 1년 계약직은 판례에 따라 11일만 인정되는 경우가 많습니다."}}, {"@type": "Question", "name": "5인 미만 사업장도 연차가 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "아니요. 연차휴가 규정은 상시 근로자 5인 이상 사업장에만 적용됩니다."}}, {"@type": "Question", "name": "못 쓴 연차는 돈으로 받을 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "사업주가 법에 정한 연차 사용촉진을 하지 않았다면 사용하지 못한 연차는 통상임금 기준 연차수당으로 받을 수 있습니다."}}]}, {"@context": "https://schema.org", "@type": "WebApplication", "name": "연차 계산기", "url": "https://thsdbgh.github.io/paycalc/leave", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "급여계산소", "item": "https://thsdbgh.github.io/paycalc/"}, {"@type": "ListItem", "position": 2, "name": "연차 계산기", "item": "https://thsdbgh.github.io/paycalc/leave"}]}]</script>
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="index.html"><i>₩</i>급여계산소</a>
+<nav class="mini"><a href="salary.html">실수령액</a><a href="juhyu.html">주휴수당</a><a href="payslip.html">명세서</a><a href="guides.html">가이드</a></nav></div></header>
+<main class="wrap"><p class="crumb"><a href="index.html">홈</a> › 연차 계산기</p>
+<h1>연차 계산기</h1><p class="lead">입사일과 확인하고 싶은 날짜를 넣으면 그 시점에 발생한 연차 일수를 알려 드립니다. (상시 5인 이상 사업장 기준)</p>
+<section class="card"><form class="calc" novalidate><div class="two"><div class="field"><label for="start">입사일</label><input id="start" type="date" value="2024-03-01" autocomplete="off"></div><div class="field"><label for="ref">기준일</label><input id="ref" type="date" value="2026-10-17" autocomplete="off"></div></div></form>
+<div class="result" id="result" aria-live="polite"></div>
+<div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
+
+<article>
+<h2>연차는 이렇게 생깁니다</h2>
+<table class="t"><tr><th>근속</th><th>연차</th></tr>
+<tr><td>1년 미만</td><td>1개월 개근마다 1일 (최대 11일)</td></tr>
+<tr><td>1~2년</td><td>15일</td></tr><tr><td>3~4년</td><td>16일</td></tr><tr><td>5~6년</td><td>17일</td></tr>
+<tr><td>11~12년</td><td>20일</td></tr><tr><td>21년 이상</td><td>25일 (상한)</td></tr></table>
+<p class="formula">1년 이상 연차 = 15일 + (근속연수 − 1) ÷ 2 (소수점 버림), 최대 25일</p>
+<h2>꼭 알아둘 점</h2>
+<ul><li>연차휴가는 <b>상시 근로자 5인 이상</b> 사업장에 적용됩니다.</li>
+<li>1년 동안 출근율이 80% 미만이면 그해에는 개근한 달마다 1일씩만 생깁니다.</li>
+<li>주 15시간 미만 근로자는 연차가 없고, 단시간 근로자는 근무시간에 비례해 시간 단위로 계산합니다.</li>
+<li>쓰지 못한 연차는 사업주가 사용촉진을 하지 않았다면 연차수당으로 받을 수 있습니다.</li></ul>
+<h2>회계연도 기준이라면?</h2>
+<p>회사가 1월 1일 기준으로 연차를 일괄 부여하더라도, 퇴사할 때는 입사일 기준으로 다시 계산해 더 유리한 쪽으로 정산해야 합니다.</p>
+</article>
+
+<h2>자주 묻는 질문</h2><details><summary>1년만 일하고 퇴사하면 연차가 몇 일인가요?</summary><p>1년 미만 기간에 생긴 최대 11일에, 1년을 채우고 다음 날까지 근로관계가 있으면 15일이 추가됩니다. 1년 계약직은 판례에 따라 11일만 인정되는 경우가 많습니다.</p></details><details><summary>5인 미만 사업장도 연차가 있나요?</summary><p>아니요. 연차휴가 규정은 상시 근로자 5인 이상 사업장에만 적용됩니다.</p></details><details><summary>못 쓴 연차는 돈으로 받을 수 있나요?</summary><p>사업주가 법에 정한 연차 사용촉진을 하지 않았다면 사용하지 못한 연차는 통상임금 기준 연차수당으로 받을 수 있습니다.</p></details>
+
+<h2>함께 쓰면 좋은 계산기</h2><div class="grid"><a class="tile" href="juhyu.html"><b>주휴수당 계산기</b><span>주 15시간 이상이면 받는 유급 휴일 수당</span></a><a class="tile" href="alba.html"><b>알바 월급 계산기</b><span>시급 → 주급·월급 (주휴 포함)</span></a><a class="tile" href="severance.html"><b>퇴직금 계산기</b><span>1년 이상 일했다면 꼭 확인</span></a></div>
+<h2>참고 기준</h2><ul class="src"><li><a href="https://www.law.go.kr/" rel="nofollow noopener" target="_blank">근로기준법 제60조 (국가법령정보센터)</a></li></ul>
+<p class="src">최종 확인: 2026-10-17. 법령·고시가 바뀌면 결과가 달라질 수 있습니다.</p></main><footer><div class="wrap">
+<p><a href="salary.html">연봉 실수령액 계산기</a> <a href="juhyu.html">주휴수당 계산기</a> <a href="alba.html">알바 월급 계산기</a> <a href="minwage.html">최저임금 계산기</a> <a href="overtime.html">연장·야간·휴일수당 계산기</a> <a href="severance.html">퇴직금 계산기</a> <a href="unemployment.html">실업급여 계산기</a> <a href="leave.html">연차 계산기</a> <a href="insurance.html">4대보험 계산기</a> <a href="daily-tax.html">일용직 세금 계산기</a> <a href="freelancer.html">3.3% 세금 계산기</a> <a href="labor-cost.html">사장님 인건비 계산기</a> <a href="payslip.html">임금명세서 만들기</a></p>
+<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="https://github.com/thsdbgh/paycalc/issues" rel="noopener">문의</a></p>
+<p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
+정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
+<p>© 2026 급여계산소 · 기준 갱신일 2026-10-17</p></div></footer>
+<script src="calc.js"></script><script src="app.js"></script><script>bindCalc(function(){
+var s=U.str('start'),f=U.str('ref');if(!s||!f){U.set('result',U.note('날짜를 입력하세요.'));return;}
+var r=Calc.annualLeave(s,f);
+U.set('result','<p class="big">'+r.days+'일</p>'+
+ (r.under1?U.row('근속','1년 미만 · '+r.months+'개월 개근')+U.note('1년 미만은 1개월 개근할 때마다 1일씩, 최대 11일이 생깁니다.')
+ :U.row('근속연수',r.years+'년')+U.row('계산','15일 + 가산 '+(r.days-15)+'일')+U.note('직전 1년 출근율 80% 이상일 때 기준입니다.')));
+});</script></body></html>

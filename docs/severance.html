@@ -1,0 +1,57 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>퇴직금 계산기 — 입사일·퇴사일·월급으로 예상 퇴직금 계산</title>
+<meta name="description" content="입사일, 마지막 근무일, 최근 3개월 급여를 넣으면 평균임금과 예상 퇴직금을 계산합니다. 상여금·연차수당 반영, 아르바이트도 가능.">
+<link rel="canonical" href="https://thsdbgh.github.io/paycalc/severance">
+<meta property="og:type" content="website"><meta property="og:site_name" content="급여계산소">
+<meta property="og:title" content="퇴직금 계산기 — 입사일·퇴사일·월급으로 예상 퇴직금 계산"><meta property="og:description" content="입사일, 마지막 근무일, 최근 3개월 급여를 넣으면 평균임금과 예상 퇴직금을 계산합니다. 상여금·연차수당 반영, 아르바이트도 가능.">
+<meta property="og:url" content="https://thsdbgh.github.io/paycalc/severance"><meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://thsdbgh.github.io/paycalc/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "급여계산소", "url": "https://thsdbgh.github.io/paycalc/"}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "아르바이트도 퇴직금을 받을 수 있나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 1년 이상, 4주 평균 주 15시간 이상 일했다면 아르바이트도 퇴직금을 받습니다."}}, {"@type": "Question", "name": "정확히 1년만 일해도 받나요?", "acceptedAnswer": {"@type": "Answer", "text": "계속근로기간이 1년(365일) 이상이면 대상입니다. 예를 들어 1월 1일 입사 후 12월 31일까지 일하면 1년을 채운 것으로 봅니다."}}, {"@type": "Question", "name": "퇴직금은 언제까지 줘야 하나요?", "acceptedAnswer": {"@type": "Answer", "text": "퇴직일로부터 14일 이내에 지급해야 합니다. 당사자 합의로 기일을 연장할 수 있습니다."}}, {"@type": "Question", "name": "상여금도 퇴직금 계산에 들어가나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 퇴직 전 1년간 받은 상여금의 3/12을 3개월 임금 총액에 더해 평균임금을 계산합니다."}}]}, {"@context": "https://schema.org", "@type": "WebApplication", "name": "퇴직금 계산기", "url": "https://thsdbgh.github.io/paycalc/severance", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "급여계산소", "item": "https://thsdbgh.github.io/paycalc/"}, {"@type": "ListItem", "position": 2, "name": "퇴직금 계산기", "item": "https://thsdbgh.github.io/paycalc/severance"}]}]</script>
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="index.html"><i>₩</i>급여계산소</a>
+<nav class="mini"><a href="salary.html">실수령액</a><a href="juhyu.html">주휴수당</a><a href="payslip.html">명세서</a><a href="guides.html">가이드</a></nav></div></header>
+<main class="wrap"><p class="crumb"><a href="index.html">홈</a> › 퇴직금 계산기</p>
+<h1>퇴직금 계산기</h1><p class="lead">입사일과 마지막 근무일, 퇴사 전 3개월 동안 받은 세전 급여를 넣어 주세요.</p>
+<section class="card"><form class="calc" novalidate><div class="two"><div class="field"><label for="start">입사일</label><input id="start" type="date" value="2024-03-01" autocomplete="off"></div><div class="field"><label for="last">마지막 근무일</label><input id="last" type="date" value="2026-10-31" autocomplete="off"></div></div><div class="field"><label for="w3">최근 3개월 세전 급여 합계 <span class="hint">원</span></label><input id="w3" inputmode="numeric" autocomplete="off" data-money value="7,500,000" placeholder=""></div><div class="two"><div class="field"><label for="bonus">최근 1년 상여금 <span class="hint">없으면 0</span></label><input id="bonus" inputmode="numeric" autocomplete="off" data-money value="0" placeholder=""></div><div class="field"><label for="leave">최근 1년 연차수당 <span class="hint">없으면 0</span></label><input id="leave" inputmode="numeric" autocomplete="off" data-money value="0" placeholder=""></div></div></form>
+<div class="result" id="result" aria-live="polite"></div>
+<div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
+
+<article>
+<h2>퇴직금 받는 조건</h2>
+<ul><li>같은 사업장에서 <b>1년 이상</b> 계속 근무</li><li>4주 평균 <b>1주 15시간 이상</b> 근무</li></ul>
+<p>정규직·계약직·아르바이트 모두 해당하며 5인 미만 사업장도 지급 의무가 있습니다(근로자퇴직급여 보장법 제4조).</p>
+<h2>계산 방법</h2>
+<p class="formula">퇴직금 = 1일 평균임금 × 30일 × (재직일수 ÷ 365)</p>
+<p class="formula">1일 평균임금 = (퇴직 전 3개월 임금 총액 + 연간 상여금 × 3/12 + 연차수당 × 3/12) ÷ 퇴직 전 3개월 일수</p>
+<p>퇴직일은 <b>마지막 근무일의 다음 날</b>입니다. 예를 들어 10월 31일까지 일했다면 퇴직일은 11월 1일이고, 평균임금 산정기간은 8월 1일~10월 31일(92일)입니다.</p>
+<h2>예시</h2>
+<p>2024년 3월 1일 입사, 2026년 10월 31일 퇴사, 최근 3개월 급여 합계 750만 원이라면 1일 평균임금은 약 81,522원, 재직일수 975일로 예상 퇴직금은 약 653만 원입니다.</p>
+<h2>주의할 점</h2>
+<ul><li>평균임금이 통상임금보다 낮으면 통상임금으로 계산합니다.</li><li>퇴직 후 <b>14일 이내</b>에 지급해야 하며, 늦으면 연 20%의 지연이자가 붙습니다.</li>
+<li>육아휴직·산재 휴업 기간 등은 평균임금 산정기간에서 빠지므로 실제 금액이 달라질 수 있습니다.</li></ul>
+</article>
+
+<h2>자주 묻는 질문</h2><details><summary>아르바이트도 퇴직금을 받을 수 있나요?</summary><p>네. 1년 이상, 4주 평균 주 15시간 이상 일했다면 아르바이트도 퇴직금을 받습니다.</p></details><details><summary>정확히 1년만 일해도 받나요?</summary><p>계속근로기간이 1년(365일) 이상이면 대상입니다. 예를 들어 1월 1일 입사 후 12월 31일까지 일하면 1년을 채운 것으로 봅니다.</p></details><details><summary>퇴직금은 언제까지 줘야 하나요?</summary><p>퇴직일로부터 14일 이내에 지급해야 합니다. 당사자 합의로 기일을 연장할 수 있습니다.</p></details><details><summary>상여금도 퇴직금 계산에 들어가나요?</summary><p>네. 퇴직 전 1년간 받은 상여금의 3/12을 3개월 임금 총액에 더해 평균임금을 계산합니다.</p></details>
+
+<h2>함께 쓰면 좋은 계산기</h2><div class="grid"><a class="tile" href="unemployment.html"><b>실업급여 계산기</b><span>하루 얼마, 며칠 받을까?</span></a><a class="tile" href="leave.html"><b>연차 계산기</b><span>입사일로 내 연차 일수 확인</span></a><a class="tile" href="insurance.html"><b>4대보험 계산기</b><span>월급에서 떼이는 금액 확인</span></a></div>
+<h2>참고 기준</h2><ul class="src"><li><a href="https://www.law.go.kr/" rel="nofollow noopener" target="_blank">근로자퇴직급여 보장법 제8조 (국가법령정보센터)</a></li><li><a href="https://www.law.go.kr/" rel="nofollow noopener" target="_blank">근로기준법 제2조(평균임금) (국가법령정보센터)</a></li></ul>
+<p class="src">최종 확인: 2026-10-17. 법령·고시가 바뀌면 결과가 달라질 수 있습니다.</p></main><footer><div class="wrap">
+<p><a href="salary.html">연봉 실수령액 계산기</a> <a href="juhyu.html">주휴수당 계산기</a> <a href="alba.html">알바 월급 계산기</a> <a href="minwage.html">최저임금 계산기</a> <a href="overtime.html">연장·야간·휴일수당 계산기</a> <a href="severance.html">퇴직금 계산기</a> <a href="unemployment.html">실업급여 계산기</a> <a href="leave.html">연차 계산기</a> <a href="insurance.html">4대보험 계산기</a> <a href="daily-tax.html">일용직 세금 계산기</a> <a href="freelancer.html">3.3% 세금 계산기</a> <a href="labor-cost.html">사장님 인건비 계산기</a> <a href="payslip.html">임금명세서 만들기</a></p>
+<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="https://github.com/thsdbgh/paycalc/issues" rel="noopener">문의</a></p>
+<p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
+정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
+<p>© 2026 급여계산소 · 기준 갱신일 2026-10-17</p></div></footer>
+<script src="calc.js"></script><script src="app.js"></script><script>bindCalc(function(){
+var s=U.str('start'),l=U.str('last');if(!s||!l){U.set('result',U.note('날짜를 입력하세요.'));return;}
+var r=Calc.severance(s,l,U.val('w3'),U.val('bonus'),U.val('leave'));
+if(r.tenureDays<=0){U.set('result',U.note('마지막 근무일이 입사일보다 늦어야 합니다.','warn'));return;}
+U.set('result','<p class="big">'+U.won(r.severance)+'<small>예상 퇴직금 (세전)</small></p>'+
+ (r.eligible?'':U.note('재직기간이 1년 미만이라 법정 퇴직금 지급 대상이 아닙니다.','warn'))+
+ U.row('재직일수',U.fmt(r.tenureDays,0)+'일')+U.row('평균임금 산정기간',r.periodDays+'일')+
+ U.row('1일 평균임금',U.won(r.avgDaily))+U.row('계산식','1일 평균임금 × 30 × 재직일수 ÷ 365')+
+ U.note('퇴직소득세가 원천징수될 수 있습니다. IRP 계좌로 받으면 과세가 이연됩니다.'));
+});</script></body></html>

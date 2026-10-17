@@ -1,0 +1,61 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>알바 월급 계산기 — 시급으로 주급·월급·실수령액 계산 (주휴수당 포함)</title>
+<meta name="description" content="시급과 주 근무시간으로 주휴수당을 포함한 주급·월급을 계산하고, 3.3% 또는 4대보험 공제 후 실수령액까지 확인하세요.">
+<link rel="canonical" href="https://thsdbgh.github.io/paycalc/alba">
+<meta property="og:type" content="website"><meta property="og:site_name" content="급여계산소">
+<meta property="og:title" content="알바 월급 계산기 — 시급으로 주급·월급·실수령액 계산 (주휴수당 포함)"><meta property="og:description" content="시급과 주 근무시간으로 주휴수당을 포함한 주급·월급을 계산하고, 3.3% 또는 4대보험 공제 후 실수령액까지 확인하세요.">
+<meta property="og:url" content="https://thsdbgh.github.io/paycalc/alba"><meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://thsdbgh.github.io/paycalc/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "급여계산소", "url": "https://thsdbgh.github.io/paycalc/"}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "주 40시간이면 왜 209시간인가요?", "acceptedAnswer": {"@type": "Answer", "text": "주휴시간 8시간을 더한 48시간에 한 달 평균 주수 4.345를 곱하면 208.6시간이고, 이를 올림해 209시간을 씁니다."}}, {"@type": "Question", "name": "알바도 4대보험에 가입해야 하나요?", "acceptedAnswer": {"@type": "Answer", "text": "월 소정근로시간이 60시간 이상이면 원칙적으로 국민연금·건강보험·고용보험 가입 대상입니다. 산재보험은 근무시간과 관계없이 적용됩니다."}}, {"@type": "Question", "name": "야간 수당은 알바도 받나요?", "acceptedAnswer": {"@type": "Answer", "text": "상시 근로자 5인 이상 사업장이라면 오후 10시~오전 6시 근무에 대해 시급의 50%를 추가로 받습니다. 5인 미만 사업장은 의무가 아닙니다."}}]}, {"@context": "https://schema.org", "@type": "WebApplication", "name": "알바 월급 계산기", "url": "https://thsdbgh.github.io/paycalc/alba", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "급여계산소", "item": "https://thsdbgh.github.io/paycalc/"}, {"@type": "ListItem", "position": 2, "name": "알바 월급 계산기", "item": "https://thsdbgh.github.io/paycalc/alba"}]}]</script>
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="index.html"><i>₩</i>급여계산소</a>
+<nav class="mini"><a href="salary.html">실수령액</a><a href="juhyu.html">주휴수당</a><a href="payslip.html">명세서</a><a href="guides.html">가이드</a></nav></div></header>
+<main class="wrap"><p class="crumb"><a href="index.html">홈</a> › 알바 월급 계산기</p>
+<h1>알바 월급 계산기</h1><p class="lead">시급과 1주 근무시간을 넣으면 주휴수당을 포함한 월급과 공제 후 실수령액을 계산합니다.</p>
+<section class="card"><form class="calc" novalidate><div class="two"><div class="field"><label for="hourly">시급 <span class="hint">원</span></label><input id="hourly" inputmode="numeric" autocomplete="off" data-money value="10,320" placeholder=""></div><div class="field"><label for="hours">1주 근무시간 <span class="hint">시간</span></label><input id="hours" type="number" inputmode="decimal" step="0.5" min="0" value="25"></div></div><div class="field"><label>공제 방식</label><div class="seg"><label><input type="radio" name="ded" value="none" checked><span>공제 없음</span></label><label><input type="radio" name="ded" value="33"><span>3.3%</span></label><label><input type="radio" name="ded" value="ins"><span>4대보험</span></label></div></div></form>
+<div class="result" id="result" aria-live="polite"></div>
+<div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
+
+<article>
+<h2>알바 월급은 이렇게 계산합니다</h2>
+<p class="formula">월급 = (1주 근무시간 + 1일 주휴시간) × 4.345주 × 시급</p>
+<p>한 달은 평균 4.345주(365일 ÷ 7 ÷ 12)입니다. 주 40시간 근무자는 (40 + 8) × 4.345 ≈ <b>209시간</b>으로, 최저임금 월급(2026년 2,156,880원, 2027년 2,236,300원)이 여기서 나옵니다.</p>
+<h2>근무시간별 월급 (최저임금 기준)</h2>
+<table class="t"><tr><th>주 근무시간</th><th>월 환산시간</th><th>2026 (10,320원)</th><th>2027 (10,700원)</th></tr>
+<tr><td>15시간</td><td>78시간</td><td>804,960원</td><td>834,600원</td></tr>
+<tr><td>20시간</td><td>104시간</td><td>1,073,280원</td><td>1,112,800원</td></tr>
+<tr><td>30시간</td><td>156시간</td><td>1,609,920원</td><td>1,669,200원</td></tr>
+<tr><td>40시간</td><td>209시간</td><td>2,156,880원</td><td>2,236,300원</td></tr></table>
+<h2>3.3%와 4대보험, 무엇이 맞나요?</h2>
+<p>사장님의 지시를 받으며 정해진 시간에 일하는 아르바이트는 원칙적으로 <b>근로자</b>이므로 근로소득으로 신고하고, 월 60시간(주 약 14시간) 이상이면 4대보험 가입 대상입니다.
+3.3% 원천징수는 원래 독립적으로 일하는 프리랜서(사업소득자)에게 쓰는 방식입니다. 3.3%로 처리되고 있다면 퇴직금·실업급여 수급에 불리할 수 있으니 확인해 보세요.</p>
+<h2>실제 받는 금액이 다른 이유</h2>
+<ul><li>결근한 주는 주휴수당이 빠집니다.</li><li>5인 이상 사업장에서 야간(22~06시)·연장(1일 8시간 초과) 근무를 하면 50%가 더 붙습니다.</li>
+<li>4대보험 금액은 회사 신고 기준 보수에 따라 조금 달라질 수 있습니다.</li></ul>
+</article>
+
+<h2>자주 묻는 질문</h2><details><summary>주 40시간이면 왜 209시간인가요?</summary><p>주휴시간 8시간을 더한 48시간에 한 달 평균 주수 4.345를 곱하면 208.6시간이고, 이를 올림해 209시간을 씁니다.</p></details><details><summary>알바도 4대보험에 가입해야 하나요?</summary><p>월 소정근로시간이 60시간 이상이면 원칙적으로 국민연금·건강보험·고용보험 가입 대상입니다. 산재보험은 근무시간과 관계없이 적용됩니다.</p></details><details><summary>야간 수당은 알바도 받나요?</summary><p>상시 근로자 5인 이상 사업장이라면 오후 10시~오전 6시 근무에 대해 시급의 50%를 추가로 받습니다. 5인 미만 사업장은 의무가 아닙니다.</p></details>
+
+<h2>함께 쓰면 좋은 계산기</h2><div class="grid"><a class="tile" href="juhyu.html"><b>주휴수당 계산기</b><span>주 15시간 이상이면 받는 유급 휴일 수당</span></a><a class="tile" href="insurance.html"><b>4대보험 계산기</b><span>월급에서 떼이는 금액 확인</span></a><a class="tile" href="freelancer.html"><b>3.3% 세금 계산기</b><span>프리랜서 실수령액·역산</span></a></div>
+<h2>참고 기준</h2><ul class="src"><li><a href="https://www.law.go.kr/" rel="nofollow noopener" target="_blank">근로기준법 제55조·제56조 (국가법령정보센터)</a></li><li><a href="https://www.minimumwage.go.kr/" rel="nofollow noopener" target="_blank">2027년 적용 최저임금 고시 (고용노동부, 2026.8.5)</a></li></ul>
+<p class="src">최종 확인: 2026-10-17. 법령·고시가 바뀌면 결과가 달라질 수 있습니다.</p></main><footer><div class="wrap">
+<p><a href="salary.html">연봉 실수령액 계산기</a> <a href="juhyu.html">주휴수당 계산기</a> <a href="alba.html">알바 월급 계산기</a> <a href="minwage.html">최저임금 계산기</a> <a href="overtime.html">연장·야간·휴일수당 계산기</a> <a href="severance.html">퇴직금 계산기</a> <a href="unemployment.html">실업급여 계산기</a> <a href="leave.html">연차 계산기</a> <a href="insurance.html">4대보험 계산기</a> <a href="daily-tax.html">일용직 세금 계산기</a> <a href="freelancer.html">3.3% 세금 계산기</a> <a href="labor-cost.html">사장님 인건비 계산기</a> <a href="payslip.html">임금명세서 만들기</a></p>
+<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="https://github.com/thsdbgh/paycalc/issues" rel="noopener">문의</a></p>
+<p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
+정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
+<p>© 2026 급여계산소 · 기준 갱신일 2026-10-17</p></div></footer>
+<script src="calc.js"></script><script src="app.js"></script><script>bindCalc(function(){
+var h=U.val('hourly'),w=U.val('hours'),d=(document.querySelector('input[name="ded"]:checked')||{}).value,r=Calc.albaMonthly(h,w);
+if(!h||!w){U.set('result',U.note('시급과 근무시간을 입력하세요.'));return;}
+var net=r.monthTotal,dn='';
+if(d==='33'){var f=Calc.freelancer(r.monthTotal);net=f.net;dn=U.row('3.3% 공제','−'+U.won(f.total));}
+if(d==='ins'){var i=Calc.insurance(r.monthTotal,2026);net=i.afterIns;dn=U.row('4대보험 공제 (2026)','−'+U.won(i.total));}
+U.set('result','<p class="big">'+U.won(net)+'<small>월 실수령 (세전 '+U.won(r.monthTotal)+')</small></p>'+
+ U.row('주급 (근무분)',U.won(r.weekBase))+U.row('주휴수당 / 주',r.juhyuHours?U.won(r.weekJuhyu):'대상 아님 (주 15시간 미만)')+
+ U.row('주급 합계',U.won(r.weekTotal),true)+U.row('월 환산 시간',r.monthHours+'시간')+dn+
+ U.note('월 환산 = (주 근무시간 + 주휴시간) × 365 ÷ 7 ÷ 12'));
+});</script></body></html>

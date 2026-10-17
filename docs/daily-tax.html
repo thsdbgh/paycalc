@@ -1,0 +1,58 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>일용직 세금 계산기 — 일당 실수령액 (일용근로소득 2.7%)</title>
+<meta name="description" content="일당과 근무일수를 넣으면 일용근로소득세와 지방소득세, 실수령액을 계산합니다. 일 15만 원 비과세, 55% 세액공제, 1,000원 미만 소액부징수 반영.">
+<link rel="canonical" href="https://thsdbgh.github.io/paycalc/daily-tax">
+<meta property="og:type" content="website"><meta property="og:site_name" content="급여계산소">
+<meta property="og:title" content="일용직 세금 계산기 — 일당 실수령액 (일용근로소득 2.7%)"><meta property="og:description" content="일당과 근무일수를 넣으면 일용근로소득세와 지방소득세, 실수령액을 계산합니다. 일 15만 원 비과세, 55% 세액공제, 1,000원 미만 소액부징수 반영.">
+<meta property="og:url" content="https://thsdbgh.github.io/paycalc/daily-tax"><meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://thsdbgh.github.io/paycalc/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f3a5f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23f2c94c' font-family='sans-serif' font-weight='700'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "급여계산소", "url": "https://thsdbgh.github.io/paycalc/"}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "일용직도 연말정산을 하나요?", "acceptedAnswer": {"@type": "Answer", "text": "일용근로소득은 원천징수로 납세 의무가 끝나는 분리과세 소득이라 연말정산이나 종합소득세 신고에 합산하지 않습니다."}}, {"@type": "Question", "name": "3.3%를 떼는 경우와 무엇이 다른가요?", "acceptedAnswer": {"@type": "Answer", "text": "3.3%는 사업소득(프리랜서) 원천징수입니다. 일용근로자는 근로자이므로 원래 일용근로소득 방식(15만 원 공제 후 2.7%)으로 떼야 합니다."}}]}, {"@context": "https://schema.org", "@type": "WebApplication", "name": "일용직 세금 계산기", "url": "https://thsdbgh.github.io/paycalc/daily-tax", "applicationCategory": "FinanceApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "급여계산소", "item": "https://thsdbgh.github.io/paycalc/"}, {"@type": "ListItem", "position": 2, "name": "일용직 세금 계산기", "item": "https://thsdbgh.github.io/paycalc/daily-tax"}]}]</script>
+</head><body>
+<header class="top"><div class="wrap"><a class="logo" href="index.html"><i>₩</i>급여계산소</a>
+<nav class="mini"><a href="salary.html">실수령액</a><a href="juhyu.html">주휴수당</a><a href="payslip.html">명세서</a><a href="guides.html">가이드</a></nav></div></header>
+<main class="wrap"><p class="crumb"><a href="index.html">홈</a> › 일용직 세금 계산기</p>
+<h1>일용직 세금 계산기</h1><p class="lead">건설 현장, 행사 스태프, 단기 알바처럼 일당으로 받는 일용근로소득의 원천징수액을 계산합니다.</p>
+<section class="card"><form class="calc" novalidate><div class="two"><div class="field"><label for="wage">일당 (세전) <span class="hint">원</span></label><input id="wage" inputmode="numeric" autocomplete="off" data-money value="200,000" placeholder=""></div><div class="field"><label for="days">근무일수 <span class="hint">일</span></label><input id="days" type="number" inputmode="decimal" step="1" min="0" value="10"></div></div></form>
+<div class="result" id="result" aria-live="polite"></div>
+<div class="actions"><button class="btn" type="button" data-copy>결과 복사</button></div></section>
+
+<article>
+<h2>계산 방법</h2>
+<p class="formula">소득세 = (일당 − 150,000원) × 6% × (1 − 55%)</p>
+<p>일당에서 하루 15만 원을 근로소득공제로 빼고, 6% 세율을 적용한 뒤 55%를 세액공제합니다. 결국 15만 원을 넘는 금액의 <b>2.7%</b>가 소득세이고, 지방소득세는 그 10%입니다.</p>
+<h2>일당별 세금</h2>
+<table class="t"><tr><th>일당</th><th>소득세</th><th>지방소득세</th><th>실수령액</th></tr>
+<tr><td>150,000원</td><td>0원</td><td>0원</td><td>150,000원</td></tr>
+<tr><td>180,000원</td><td>0원 (소액부징수)</td><td>0원</td><td>180,000원</td></tr>
+<tr><td>200,000원</td><td>1,350원</td><td>130원</td><td>198,520원</td></tr>
+<tr><td>250,000원</td><td>2,700원</td><td>270원</td><td>247,030원</td></tr>
+<tr><td>300,000원</td><td>4,050원</td><td>400원</td><td>295,550원</td></tr></table>
+<h2>소액부징수란?</h2>
+<p>하루 원천징수할 소득세가 1,000원 미만이면 떼지 않습니다. 일당 187,037원까지는 세금이 0원입니다.</p>
+<h2>같은 곳에서 오래 일하면?</h2>
+<p>같은 사업장에서 3개월 이상(건설공사는 1년 이상) 계속 일하면 일용근로자가 아니라 일반 근로자로 보아 근로소득 간이세액표로 원천징수합니다.</p>
+</article>
+
+<h2>자주 묻는 질문</h2><details><summary>일용직도 연말정산을 하나요?</summary><p>일용근로소득은 원천징수로 납세 의무가 끝나는 분리과세 소득이라 연말정산이나 종합소득세 신고에 합산하지 않습니다.</p></details><details><summary>3.3%를 떼는 경우와 무엇이 다른가요?</summary><p>3.3%는 사업소득(프리랜서) 원천징수입니다. 일용근로자는 근로자이므로 원래 일용근로소득 방식(15만 원 공제 후 2.7%)으로 떼야 합니다.</p></details>
+
+<h2>함께 쓰면 좋은 계산기</h2><div class="grid"><a class="tile" href="alba.html"><b>알바 월급 계산기</b><span>시급 → 주급·월급 (주휴 포함)</span></a><a class="tile" href="overtime.html"><b>연장·야간·휴일수당 계산기</b><span>5인 이상 사업장 가산수당</span></a><a class="tile" href="freelancer.html"><b>3.3% 세금 계산기</b><span>프리랜서 실수령액·역산</span></a></div>
+<h2>참고 기준</h2><ul class="src"><li><a href="https://www.law.go.kr/" rel="nofollow noopener" target="_blank">소득세법 제14조·제47조·제59조, 제86조(소액부징수) (국가법령정보센터)</a></li></ul>
+<p class="src">최종 확인: 2026-10-17. 법령·고시가 바뀌면 결과가 달라질 수 있습니다.</p></main><footer><div class="wrap">
+<p><a href="salary.html">연봉 실수령액 계산기</a> <a href="juhyu.html">주휴수당 계산기</a> <a href="alba.html">알바 월급 계산기</a> <a href="minwage.html">최저임금 계산기</a> <a href="overtime.html">연장·야간·휴일수당 계산기</a> <a href="severance.html">퇴직금 계산기</a> <a href="unemployment.html">실업급여 계산기</a> <a href="leave.html">연차 계산기</a> <a href="insurance.html">4대보험 계산기</a> <a href="daily-tax.html">일용직 세금 계산기</a> <a href="freelancer.html">3.3% 세금 계산기</a> <a href="labor-cost.html">사장님 인건비 계산기</a> <a href="payslip.html">임금명세서 만들기</a></p>
+<p><a href="about.html">사이트 소개</a><a href="privacy.html">개인정보처리방침</a><a href="https://github.com/thsdbgh/paycalc/issues" rel="noopener">문의</a></p>
+<p>모든 계산은 브라우저 안에서만 이루어지며 입력값은 서버로 전송·저장되지 않습니다. 계산 결과는 참고용이며 법률·세무 자문을 대신하지 않습니다.
+정확한 판단은 고용노동부 고객상담센터(☎1350), 국민연금공단·건강보험공단, 노무사·세무사에게 확인하세요.</p>
+<p>© 2026 급여계산소 · 기준 갱신일 2026-10-17</p></div></footer>
+<script src="calc.js"></script><script src="app.js"></script><script>bindCalc(function(){
+var w=U.val('wage'),d=U.val('days')||1;if(!w){U.set('result',U.note('일당을 입력하세요.'));return;}
+var r=Calc.dailyWorkerTax(w,d);
+U.set('result','<p class="big">'+U.won(r.perDayNet)+'<small>하루 실수령액</small></p>'+
+ U.row('소득세 / 일',U.won(r.tax))+U.row('지방소득세 / 일',U.won(r.local))+
+ U.row(d+'일 세금 합계',U.won(r.totalTax))+U.row(d+'일 실수령 합계',U.won(r.totalNet),true)+
+ (r.tax===0&&w>150000?U.note('하루 소득세가 1,000원 미만이라 떼지 않습니다(소액부징수).'):'')+
+ U.note('고용보험(0.9%)에 가입된 일용직이라면 별도로 공제될 수 있습니다.'));
+});</script></body></html>
