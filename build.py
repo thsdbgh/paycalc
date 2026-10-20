@@ -402,6 +402,8 @@ def main():
     for f in ("style.css", "calc.js", "app.js", "ganyi.js"):
         shutil.copy(SRC / f, DIST / f)
     shutil.copytree(SRC / "app", DIST / "app")
+    key = (SRC / "indexnow.txt").read_text().strip()  # IndexNow(네이버·빙) 소유 확인 키 — 지우지 마세요
+    (DIST / f"{key}.txt").write_text(key, encoding="utf-8")
     (DIST / "index.html").write_text(build_index(), encoding="utf-8")
     for p in PAGES:
         (DIST / f"{p['slug']}.html").write_text(build_page(p), encoding="utf-8")
