@@ -395,6 +395,14 @@ TERMS = f"""<p>이 약관은 {SITE_NAME}(이하 '서비스')가 제공하는 계
 <h2>7. 문의</h2><p><a href="{CONTACT_HREF}" rel="noopener">{CONTACT_TEXT}</a></p>
 <p class="src">시행일: 2026-10-17</p>"""
 
+import re as _re
+def clean_links(text):
+    """사이트 안 링크를 정규 주소(/salary)로 통일: Cloudflare가 *.html을 리디렉션하므로 검색엔진이 리디렉션을 만나지 않게 한다."""
+    text = _re.sub(r'href="index\.html"', 'href="/"', text)
+    text = _re.sub(r'href="([a-z0-9-]+)\.html(#[^"]*)?"', lambda m: f'href="/{m.group(1)}{m.group(2) or ""}"', text)
+    text = text.replace('href="app/', 'href="/app/')
+    return text
+
 def main():
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -433,6 +441,8 @@ def main():
     if args.adsense:
         pub = args.adsense.replace("ca-", "")
         (DIST / "ads.txt").write_text(f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
+    for f in DIST.glob("*.html"):
+        f.write_text(clean_links(f.read_text(encoding="utf-8")), encoding="utf-8")
     print(f"built {len(urls)} pages → {DIST}")
 
 main()

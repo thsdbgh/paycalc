@@ -196,7 +196,7 @@
     $("#save").onclick = save;
     $("#slipbtn").onclick = function () {
       (dirty ? save() : Promise.resolve()).then(function () {
-        var r = current(), link = location.origin + "/app/s.html?t=" + encodeURIComponent(e.shareToken) + "&ym=" + S.ym;
+        var r = current(), link = location.origin + "/app/s?t=" + encodeURIComponent(e.shareToken) + "&ym=" + S.ym;
         $("#slipwrap").innerHTML = '<h2>임금명세서</h2>' + renderSlip(e, S.me.business, S.ym, r) +
           '<p class="note no-print">직원에게 아래 링크를 카카오톡이나 문자로 보내면 명세서를 볼 수 있어요 (전자 교부).</p>' +
           '<div class="linkbox no-print"><input id="lnk" readonly value="' + esc(link) + '"><button class="btn" type="button" id="cp">복사</button></div>' +
